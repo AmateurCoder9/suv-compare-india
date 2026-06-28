@@ -2,7 +2,9 @@ import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { ScoreRadarChart } from '@/components/score-radar-chart'
-import { Check, X, Star, Shield, Gauge, Tag } from 'lucide-react'
+import { Check, X, Star, Shield, Gauge, Tag, Car } from 'lucide-react'
+import Image from 'next/image'
+import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
 export default async function VariantDetailPage({
   params
@@ -59,40 +61,65 @@ export default async function VariantDetailPage({
   // Calculate overall score
   const totalScore = variant.scores.reduce((sum, s) => sum + s.score, 0)
 
+  const img = getCarHeroImage(variant.model.slug) || getFallbackCarImage(variant.model.slug)
+
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-10">
       {/* Header Card */}
-      <div className="glass-card rounded-2xl p-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="text-xs text-primary font-medium uppercase tracking-wider">
-              {variant.model.manufacturer.name} • {variant.model.name}
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight mt-1">
-              {variant.name}
-            </h1>
-            <div className="flex items-center gap-3 mt-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 border border-primary/20 text-sm font-medium text-primary">
-                <Tag className="w-3.5 h-3.5" />
-                {(variant.prices[0]?.priceInrLakh || 0) > 0 ? formatCurrencyLakh(variant.prices[0]?.priceInrLakh || 0) : 'Price TBA'}
-              </span>
-              {variant.isBase && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-400">
-                  <Star className="w-3 h-3" /> Base Model
-                </span>
+      <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-0">
+          {/* Image */}
+          <div className="h-64 md:h-auto bg-white/5 flex items-center justify-center p-8 border-b md:border-b-0 md:border-r border-white/10">
+            {img ? (
+              <Image
+                src={img}
+                alt={`${variant.model.manufacturer.name} ${variant.model.name}`}
+                width={400}
+                height={280}
+                className="object-contain drop-shadow-lg"
+              />
+            ) : (
+              <div className="flex flex-col items-center gap-2 text-white/20">
+                <Car className="w-16 h-16" />
+                <span className="text-[11px] font-medium tracking-wide">Official image unavailable.</span>
+              </div>
+            )}
+          </div>
+          
+          {/* Info */}
+          <div className="p-8 flex flex-col justify-center">
+            <div className="flex justify-between items-start gap-4">
+              <div>
+                <div className="text-xs text-white/40 font-medium uppercase tracking-wider">
+                  {variant.model.manufacturer.name} • {variant.model.name}
+                </div>
+                <h1 className="text-3xl font-bold tracking-tight mt-1 text-white/95">
+                  {variant.name}
+                </h1>
+                <div className="flex items-center gap-3 mt-4">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-sm font-medium text-white/80">
+                    <Tag className="w-3.5 h-3.5" />
+                    {(variant.prices[0]?.priceInrLakh || 0) > 0 ? formatCurrencyLakh(variant.prices[0]?.priceInrLakh || 0) : 'Price TBA'}
+                  </span>
+                  {variant.isBase && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-400">
+                      <Star className="w-3 h-3" /> Base Model
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Overall Score */}
+              {radarData.length > 0 && (
+                <div className="text-center shrink-0">
+                  <div className="w-20 h-20 rounded-2xl glass border border-white/10 flex flex-col items-center justify-center">
+                    <div className="text-xl font-extrabold text-white/95">{Math.round(totalScore)}</div>
+                    <div className="text-[9px] text-white/40 uppercase tracking-wider">/1000</div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
-
-          {/* Overall Score */}
-          {radarData.length > 0 && (
-            <div className="text-center shrink-0">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex flex-col items-center justify-center animate-pulse-glow">
-                <div className="text-2xl font-extrabold gradient-text">{Math.round(totalScore)}</div>
-                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">/1000</div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

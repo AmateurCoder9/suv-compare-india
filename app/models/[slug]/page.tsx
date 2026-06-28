@@ -6,20 +6,7 @@ import { PriceRangeBar } from '@/components/price-range-bar'
 import { ArrowRight, Car, Tag } from 'lucide-react'
 import Image from 'next/image'
 
-const carImages: Record<string, string> = {
-  'hyundai-creta': '/images/cars/hyundai-creta.png',
-  'kia-seltos': '/images/cars/kia-seltos.png',
-  'tata-nexon': '/images/cars/tata-nexon.png',
-  'maruti-suzuki-grand-vitara': '/images/cars/maruti-grand-vitara.png',
-}
-
-function getCarImage(slug: string): string | null {
-  if (carImages[slug]) return carImages[slug]
-  for (const [key, value] of Object.entries(carImages)) {
-    if (slug.includes(key)) return value
-  }
-  return null
-}
+import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
 export default async function ModelOverviewPage({
   params
@@ -46,7 +33,7 @@ export default async function ModelOverviewPage({
   const validPrices = model.variants.filter(v => (v.prices[0]?.priceInrLakh || 0) > 0).map(v => v.prices[0]?.priceInrLakh || 0)
   const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0
   const maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0
-  const img = getCarImage(model.slug)
+  const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-12">
@@ -64,7 +51,10 @@ export default async function ModelOverviewPage({
                 className="object-contain drop-shadow-lg"
               />
             ) : (
-              <Car className="w-24 h-24 text-muted-foreground/20" />
+              <div className="flex flex-col items-center gap-2 text-white/20">
+                <Car className="w-16 h-16" />
+                <span className="text-[11px] font-medium tracking-wide">Official image unavailable.</span>
+              </div>
             )}
           </div>
           

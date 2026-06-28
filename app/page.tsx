@@ -7,20 +7,7 @@ import { ArrowRight, BarChart3, Car, GitCompareArrows, Trophy, Shield, Zap } fro
 import Image from 'next/image'
 import { Hero3DCar } from '@/components/hero-3d-car'
 
-const carImages: Record<string, string> = {
-  'hyundai-creta': '/images/cars/hyundai-creta.png',
-  'kia-seltos': '/images/cars/kia-seltos.png',
-  'tata-nexon': '/images/cars/tata-nexon.png',
-  'maruti-suzuki-grand-vitara': '/images/cars/maruti-grand-vitara.png',
-}
-
-function getCarImage(slug: string): string | null {
-  if (carImages[slug]) return carImages[slug]
-  for (const [key, value] of Object.entries(carImages)) {
-    if (slug.includes(key)) return value
-  }
-  return null
-}
+import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
 export default async function HomePage() {
   const recentModels = await db.model.findMany({
@@ -128,7 +115,7 @@ export default async function HomePage() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {recentModels.map((model, idx) => {
-            const img = getCarImage(model.slug)
+            const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
             return (
               <Link key={model.id} href={`/models/${model.slug}`}>
                 <div className="glass-card overflow-hidden group" style={{ animationDelay: `${idx * 0.1}s` }}>
@@ -143,7 +130,10 @@ export default async function HomePage() {
                         className="object-contain group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <Car className="w-16 h-16 text-white/10" />
+                      <div className="flex flex-col items-center gap-1.5 text-white/20">
+                        <Car className="w-8 h-8" />
+                        <span className="text-[9px] font-medium tracking-wide">Official image unavailable.</span>
+                      </div>
                     )}
                     {/* Year badge */}
                     <div className="absolute top-3 right-3 px-2 py-0.5 rounded-lg glass text-xs font-medium text-white/80">

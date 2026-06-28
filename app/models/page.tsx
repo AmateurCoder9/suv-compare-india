@@ -3,20 +3,7 @@ import Link from 'next/link'
 import { Car } from 'lucide-react'
 import Image from 'next/image'
 
-const carImages: Record<string, string> = {
-  'hyundai-creta': '/images/cars/hyundai-creta.png',
-  'kia-seltos': '/images/cars/kia-seltos.png',
-  'tata-nexon': '/images/cars/tata-nexon.png',
-  'maruti-suzuki-grand-vitara': '/images/cars/maruti-grand-vitara.png',
-}
-
-function getCarImage(slug: string): string | null {
-  if (carImages[slug]) return carImages[slug]
-  for (const [key, value] of Object.entries(carImages)) {
-    if (slug.includes(key)) return value
-  }
-  return null
-}
+import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
 export default async function ModelsIndexPage() {
   const manufacturers = await db.manufacturer.findMany({
@@ -47,7 +34,7 @@ export default async function ModelsIndexPage() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {manufacturer.models.map(model => {
-              const img = getCarImage(model.slug)
+              const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
               return (
                 <Link key={model.id} href={`/models/${model.slug}`}>
                   <div className="glass-card rounded-xl overflow-hidden group h-full">
@@ -61,7 +48,10 @@ export default async function ModelsIndexPage() {
                           className="object-contain group-hover:scale-105 transition-transform duration-500"
                         />
                       ) : (
-                        <Car className="w-12 h-12 text-muted-foreground/20" />
+                        <div className="flex flex-col items-center gap-1.5 text-white/20">
+                          <Car className="w-8 h-8" />
+                          <span className="text-[9px] font-medium tracking-wide">Official image unavailable.</span>
+                        </div>
                       )}
                       <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-medium text-primary">
                         {model.launchYear}
