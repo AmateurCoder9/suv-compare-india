@@ -1,0 +1,432 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// ─── Core Models ────────────────────────────────────────────
+
+model Manufacturer {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  country     String
+  logoUrl     String?
+  websiteUrl  String?
+  models      Model[]
+  createdAt   DateTime @default(now())
+}
+
+model Model {
+  id               Int          @id @default(autoincrement())
+  manufacturerId   Int
+  manufacturer     Manufacturer @relation(fields: [manufacturerId], references: [id])
+  name             String
+  slug             String       @unique
+  bodyType         String       // SUV, Compact SUV, Coupe SUV
+  launchYear       Int
+  currentYear      Int
+  generationName   String?      // e.g. "2024 Facelift", "5th Gen"
+  variants         Variant[]
+  competitors      ModelCompetitor[] @relation("ModelCompetitors")
+  competingWith    ModelCompetitor[] @relation("CompetingModels")
+  buyerGuideEntries BuyerGuideEntry[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model ModelCompetitor {
+  id           Int   @id @default(autoincrement())
+  modelId      Int
+  model        Model @relation("ModelCompetitors", fields: [modelId], references: [id])
+  competitorId Int
+  competitor   Model @relation("CompetingModels", fields: [competitorId], references: [id])
+}
+
+model Variant {
+  id              Int      @id @default(autoincrement())
+  modelId         Int
+  model           Model    @relation(fields: [modelId], references: [id])
+  name            String                          // e.g. "HTX(A)"
+  slug            String   @unique               // e.g. "kia-seltos-htx-a"
+  displayOrder    Int                             // For ordering within model
+  isBase          Boolean  @default(false)
+  isDiscontinued  Boolean  @default(false)
+
+  // Relationships
+  engine          Engine?
+  transmission    Transmission?
+  dimensions      Dimensions?
+  fuelEconomy     FuelEconomy?
+  features        VariantFeature[]
+  safetyFeatures  SafetyFeature[]
+  adasFeatures    ADASFeature[]
+  ownership       Ownership?
+  warranty        Warranty?
+  prices          Price[]
+  pros            Pro[]
+  cons            Con[]
+  commonIssues    CommonIssue[]
+  media           Media[]
+  reviewConsensus ReviewConsensus?
+  scores          VariantScore[]
+  rankingEntries  Ranking[]
+  comparisonsA    Comparison[] @relation("ComparisonVariantA")
+  comparisonsB    Comparison[] @relation("ComparisonVariantB")
+  variantBefore   VariantProgression? @relation("Before")
+  variantAfter    VariantProgression? @relation("After")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// ─── Specifications ──────────────────────────────────────────
+
+model Engine {
+  id               Int     @id @default(autoincrement())
+  variantId        Int     @unique
+  variant          Variant @relation(fields: [variantId], references: [id])
+  displacement     Int                             // cc, e.g. 1497
+  configType       String                          // Inline-4, etc.
+  fuelType         String  @default("Petrol")
+  isTurbo          Boolean @default(false)
+  maxPowerBhp      Float                           // e.g. 115.0
+  maxPowerRpm      Int                             // e.g. 6300
+  maxTorqueNm      Float                           // e.g. 144.0
+  maxTorqueRpm     Int                             // e.g. 4500
+  emissionNorm     String                          // BS6 Phase 2
+  sourceId         Int?
+  source           Source? @relation(fields: [sourceId], references: [id])
+  confidence       Int     @default(100)           // 0–100
+}
+
+model Transmission {
+  id          Int     @id @default(autoincrement())
+  variantId   Int     @unique
+  variant     Variant @relation(fields: [variantId], references: [id])
+  type        String                               // Manual, DCT, IVT, CVT, AT, DSG
+  speeds      Int                                  // Number of gears
+  driveType   String  @default("FWD")             // FWD, AWD
+  sourceId    Int?
+  source      Source? @relation(fields: [sourceId], references: [id])
+  confidence  Int     @default(100)
+}
+
+model Dimensions {
+  id                Int     @id @default(autoincrement())
+  variantId         Int     @unique
+  variant           Variant @relation(fields: [variantId], references: [id])
+  lengthMm          Int
+  widthMm           Int
+  heightMm          Int
+  wheelbaseMm       Int
+  groundClearanceMm Int
+  bootLitres        Int
+  fuelTankLitres    Int
+  kerbWeightKg      Int?
+  tyreSizeFront     String                          // e.g. "215/60 R17"
+  tyreSizeRear      String
+  sourceId          Int?
+  source            Source? @relation(fields: [sourceId], references: [id])
+  confidence        Int     @default(100)
+}
+
+model FuelEconomy {
+  id                  Int     @id @default(autoincrement())
+  variantId           Int     @unique
+  variant             Variant @relation(fields: [variantId], references: [id])
+  araiKmpl            Float
+  realWorldEstKmpl    Float?
+  testMethodology     String  @default("ARAI")
+  sourceId            Int?
+  source              Source? @relation(fields: [sourceId], references: [id])
+  confidence          Int     @default(90)
+  notes               String?
+}
+
+// ─── Feature System ──────────────────────────────────────────
+
+model FeatureCategory {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique                      // Exterior, Interior, Technology, Safety, Comfort
+  slug     String    @unique
+  order    Int
+  features Feature[]
+}
+
+model Feature {
+  id          Int             @id @default(autoincrement())
+  categoryId  Int
+  category    FeatureCategory @relation(fields: [categoryId], references: [id])
+  name        String                              // "Panoramic Sunroof"
+  slug        String          @unique
+  description String?
+  isFilterable Boolean        @default(true)
+  variants    VariantFeature[]
+}
+
+model VariantFeature {
+  id         Int     @id @default(autoincrement())
+  variantId  Int
+  variant    Variant @relation(fields: [variantId], references: [id])
+  featureId  Int
+  feature    Feature @relation(fields: [featureId], references: [id])
+  value      String                              // "YES", "NO", "OPTIONAL", or descriptive
+  notes      String?
+  sourceId   Int?
+  source     Source? @relation(fields: [sourceId], references: [id])
+  confidence Int     @default(100)
+
+  @@unique([variantId, featureId])
+}
+
+model SafetyFeature {
+  id        Int     @id @default(autoincrement())
+  variantId Int
+  variant   Variant @relation(fields: [variantId], references: [id])
+  name      String                               // ABS, EBD, 6 Airbags, etc.
+  isStandard Boolean @default(true)
+  sourceId  Int?
+  source    Source? @relation(fields: [sourceId], references: [id])
+  confidence Int    @default(100)
+}
+
+model ADASFeature {
+  id        Int     @id @default(autoincrement())
+  variantId Int
+  variant   Variant @relation(fields: [variantId], references: [id])
+  name      String                               // Lane Assist, AEB, Blind Spot, etc.
+  level     String?                              // L1, L2
+  notes     String?
+  sourceId  Int?
+  source    Source? @relation(fields: [sourceId], references: [id])
+  confidence Int    @default(100)
+}
+
+// ─── Scoring System ──────────────────────────────────────────
+
+model ScoreCategory {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique              // "Luxury", "Size", "Comfort", etc.
+  slug        String         @unique
+  maxScore    Int                                 // Maximum possible score
+  weight      Float                              // Weight in Overall score
+  description String?
+  scores      VariantScore[]
+}
+
+model VariantScore {
+  id              Int           @id @default(autoincrement())
+  variantId       Int
+  variant         Variant       @relation(fields: [variantId], references: [id])
+  categoryId      Int
+  category        ScoreCategory @relation(fields: [categoryId], references: [id])
+  score           Float
+  explanation     String                          // REQUIRED — never empty
+  confidence      Int           @default(80)     // 0–100
+  lastUpdated     DateTime      @default(now())
+  sourceIds       String?                         // comma-separated source IDs
+
+  @@unique([variantId, categoryId])
+}
+
+// ─── Ownership & Reliability ─────────────────────────────────
+
+model Ownership {
+  id                    Int     @id @default(autoincrement())
+  variantId             Int     @unique
+  variant               Variant @relation(fields: [variantId], references: [id])
+  warrantyYears         Int
+  warrantyKm            Int
+  extendedWarrantyAvail Boolean @default(false)
+  insuranceEstInrLakh   Float?
+  annualServiceCostInr  Int?
+  tyreCostPerSetInr     Int?
+  brakePadCostInr       Int?
+  fiveYearOwnershipInr  Int?
+  reliabilityNotes      String?
+  resaleEstimatePercent Int?                       // % of original price after 3 yrs
+  sourceId              Int?
+  source                Source? @relation(fields: [sourceId], references: [id])
+}
+
+model Warranty {
+  id          Int     @id @default(autoincrement())
+  variantId   Int     @unique
+  variant     Variant @relation(fields: [variantId], references: [id])
+  basicYears  Int
+  basicKm     Int
+  extYears    Int?
+  extKm       Int?
+  rustYears   Int?
+  notes       String?
+}
+
+model CommonIssue {
+  id          Int     @id @default(autoincrement())
+  variantId   Int
+  variant     Variant @relation(fields: [variantId], references: [id])
+  issue       String
+  severity    String                               // LOW, MEDIUM, HIGH, CRITICAL
+  frequency   String                               // RARE, OCCASIONAL, COMMON, WIDESPREAD
+  resolution  String?
+  sourceId    Int?
+  source      Source? @relation(fields: [sourceId], references: [id])
+}
+
+// ─── Pricing ─────────────────────────────────────────────────
+
+model Price {
+  id          Int      @id @default(autoincrement())
+  variantId   Int
+  variant     Variant  @relation(fields: [variantId], references: [id])
+  priceInrLakh Float
+  priceType   String   @default("Ex-Showroom Delhi")
+  validFrom   DateTime @default(now())
+  validTo     DateTime?
+  sourceId    Int?
+  source      Source?  @relation(fields: [sourceId], references: [id])
+  isLatest    Boolean  @default(true)
+}
+
+// ─── Editorial ───────────────────────────────────────────────
+
+model Pro {
+  id        Int     @id @default(autoincrement())
+  variantId Int
+  variant   Variant @relation(fields: [variantId], references: [id])
+  text      String
+  order     Int
+}
+
+model Con {
+  id        Int     @id @default(autoincrement())
+  variantId Int
+  variant   Variant @relation(fields: [variantId], references: [id])
+  text      String
+  order     Int
+}
+
+model ReviewConsensus {
+  id              Int     @id @default(autoincrement())
+  variantId       Int     @unique
+  variant         Variant @relation(fields: [variantId], references: [id])
+  avgRating       Float
+  totalReviews    Int
+  commonPraise    String                           // Comma-separated or JSON text
+  commonComplaints String
+  sources         String                           // Which outlets contributed
+  lastUpdated     DateTime @default(now())
+}
+
+model Media {
+  id          Int     @id @default(autoincrement())
+  variantId   Int
+  variant     Variant @relation(fields: [variantId], references: [id])
+  type        String                               // FRONT, REAR, SIDE, INTERIOR, DASHBOARD, REAR_SEAT, BOOT, WHEEL, COLOR
+  url         String
+  altText     String
+  isOfficial  Boolean @default(true)
+  sourceId    Int?
+  source      Source? @relation(fields: [sourceId], references: [id])
+}
+
+// ─── Variant Progression ─────────────────────────────────────
+
+model VariantProgression {
+  id                  Int     @id @default(autoincrement())
+  beforeVariantId     Int     @unique
+  before              Variant @relation("Before", fields: [beforeVariantId], references: [id])
+  afterVariantId      Int     @unique
+  after               Variant @relation("After", fields: [afterVariantId], references: [id])
+  priceDiffInrLakh    Float
+  featuresAdded       String                       // Newline-separated list
+  featuresRemoved     String?
+  verdict             String                       // 1–5 stars encoded as integer string
+  verdictExplanation  String
+}
+
+// ─── Rankings ────────────────────────────────────────────────
+
+model Ranking {
+  id          Int     @id @default(autoincrement())
+  variantId   Int
+  variant     Variant @relation(fields: [variantId], references: [id])
+  category    String                               // "Overall", "Luxury", "Mercedes Index", etc.
+  rank        Int
+  score       Float
+  updatedAt   DateTime @default(now())
+
+  @@unique([category, variantId])
+}
+
+// ─── Buyer Guides ────────────────────────────────────────────
+
+model BuyerGuide {
+  id          Int               @id @default(autoincrement())
+  title       String                               // "Best SUV Under ₹15 Lakh"
+  slug        String            @unique
+  description String
+  criteria    String                               // What was judged and how
+  entries     BuyerGuideEntry[]
+  updatedAt   DateTime          @updatedAt
+}
+
+model BuyerGuideEntry {
+  id           Int        @id @default(autoincrement())
+  guideId      Int
+  guide        BuyerGuide @relation(fields: [guideId], references: [id])
+  modelId      Int
+  model        Model      @relation(fields: [modelId], references: [id])
+  rank         Int
+  explanation  String
+}
+
+// ─── Comparisons (Saved) ─────────────────────────────────────
+
+model Comparison {
+  id         Int      @id @default(autoincrement())
+  variantAId Int
+  variantA   Variant  @relation("ComparisonVariantA", fields: [variantAId], references: [id])
+  variantBId Int
+  variantB   Variant  @relation("ComparisonVariantB", fields: [variantBId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+// ─── Sources & Audit ─────────────────────────────────────────
+
+model Source {
+  id          Int      @id @default(autoincrement())
+  name        String                               // "Kia Official Brochure", "Autocar India", etc.
+  url         String?
+  type        String                               // OFFICIAL, REVIEW, OWNER, FORUM
+  verifiedAt  DateTime?
+  engines     Engine[]
+  transmissions Transmission[]
+  dimensions  Dimensions[]
+  fuelEconomy FuelEconomy[]
+  features    VariantFeature[]
+  safetyFeatures SafetyFeature[]
+  adasFeatures   ADASFeature[]
+  ownerships     Ownership[]
+  media          Media[]
+  prices         Price[]
+  issues         CommonIssue[]
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  table      String
+  recordId   Int
+  action     String                               // CREATE, UPDATE, DELETE
+  fieldName  String?
+  oldValue   String?
+  newValue   String?
+  reason     String?
+  createdAt  DateTime @default(now())
+}
