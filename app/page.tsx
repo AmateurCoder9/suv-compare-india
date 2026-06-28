@@ -1,13 +1,12 @@
 import { db } from '@/lib/db'
 import { GlobalSearchBar } from '@/components/global-search-bar'
 import Link from 'next/link'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { getTopVariantsByCategory } from '@/lib/rankings'
 import { formatCurrencyLakh } from '@/lib/formatters'
-import { ArrowRight, BarChart3, Car, GitCompareArrows, Trophy, Shield, Zap, Star } from 'lucide-react'
+import { ArrowRight, BarChart3, Car, GitCompareArrows, Trophy, Shield, Zap } from 'lucide-react'
 import Image from 'next/image'
+import { Hero3DCar } from '@/components/hero-3d-car'
 
-// Map model slugs to car image files
 const carImages: Record<string, string> = {
   'hyundai-creta': '/images/cars/hyundai-creta.png',
   'kia-seltos': '/images/cars/kia-seltos.png',
@@ -16,7 +15,6 @@ const carImages: Record<string, string> = {
 }
 
 function getCarImage(slug: string): string | null {
-  // Check exact match first, then partial match
   if (carImages[slug]) return carImages[slug]
   for (const [key, value] of Object.entries(carImages)) {
     if (slug.includes(key)) return value
@@ -42,22 +40,22 @@ export default async function HomePage() {
   return (
     <div className="space-y-0">
       {/* ─── Hero Section ─────────────────────────────────────── */}
-      <section className="hero-bg grid-pattern relative overflow-hidden">
-        <div className="container mx-auto px-4 py-20 lg:py-28">
+      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+        <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Copy */}
-            <div className="space-y-8 animate-slide-up">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-xs font-medium text-primary">
-                <Zap className="w-3.5 h-3.5" />
+            <div className="space-y-8 animate-slide-up z-10 relative">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 glass text-xs font-medium text-white/80">
+                <Zap className="w-3.5 h-3.5 text-primary" />
                 2026 Edition — Updated Weekly
               </div>
 
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1]">
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1] text-white">
                 Find Your <br />
                 <span className="gradient-text">Perfect SUV</span>
               </h1>
 
-              <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
+              <p className="text-lg text-white/60 max-w-lg leading-relaxed">
                 Compare every petrol SUV under ₹20 lakh in India. Real specs, transparent scoring out of 1000, 
                 and side-by-side feature breakdowns — powered by data, not opinions.
               </p>
@@ -70,59 +68,46 @@ export default async function HomePage() {
               <div className="flex gap-8 pt-2">
                 <div>
                   <div className="text-3xl font-bold gradient-text">{stats.manufacturers}+</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Brands</div>
+                  <div className="text-xs text-white/50 uppercase tracking-wider mt-1">Brands</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold gradient-text">{stats.models}+</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Models</div>
+                  <div className="text-xs text-white/50 uppercase tracking-wider mt-1">Models</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold gradient-text">{stats.variants}+</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">Variants</div>
+                  <div className="text-xs text-white/50 uppercase tracking-wider mt-1">Variants</div>
                 </div>
               </div>
             </div>
 
-            {/* Right: Hero Image */}
-            <div className="relative hidden lg:block">
-              <div className="animate-float">
-                <Image
-                  src="/images/hero-suv.png"
-                  alt="Modern SUV"
-                  width={700}
-                  height={500}
-                  className="drop-shadow-2xl"
-                  priority
-                />
-              </div>
-              {/* Glow effect behind car */}
-              <div className="absolute inset-0 -z-10 flex items-center justify-center">
-                <div className="w-96 h-96 rounded-full bg-primary/10 blur-3xl"></div>
-              </div>
+            {/* Right: 3D Hero */}
+            <div className="relative animate-fade-in lg:ml-8 z-0">
+              <Hero3DCar />
             </div>
           </div>
         </div>
       </section>
 
       {/* ─── Quick Actions ────────────────────────────────────── */}
-      <section className="container mx-auto px-4 -mt-8 relative z-10">
+      <section className="container mx-auto px-4 relative z-10">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { href: '/models', icon: Car, label: 'Browse Models', desc: 'All SUVs at a glance', color: 'text-emerald-400' },
-            { href: '/compare', icon: GitCompareArrows, label: 'Compare', desc: 'Side-by-side specs', color: 'text-blue-400' },
-            { href: '/rankings', icon: Trophy, label: 'Rankings', desc: 'Top scorers by category', color: 'text-amber-400' },
-            { href: '/buyer-guides', icon: Shield, label: 'Buyer Guides', desc: 'Expert recommendations', color: 'text-purple-400' },
+            { href: '/models', icon: Car, label: 'Browse Models', desc: 'All SUVs at a glance', color: 'text-white' },
+            { href: '/compare', icon: GitCompareArrows, label: 'Compare', desc: 'Side-by-side specs', color: 'text-white' },
+            { href: '/rankings', icon: Trophy, label: 'Rankings', desc: 'Top scorers by category', color: 'text-white' },
+            { href: '/buyer-guides', icon: Shield, label: 'Buyer Guides', desc: 'Expert recommendations', color: 'text-white' },
           ].map(action => (
             <Link key={action.href} href={action.href}>
-              <div className="glass-card rounded-xl p-5 flex items-center gap-4 group">
-                <div className={`w-12 h-12 rounded-lg bg-accent/50 flex items-center justify-center ${action.color} group-hover:scale-110 transition-transform`}>
+              <div className="glass-card p-5 flex items-center gap-4 group">
+                <div className={`w-12 h-12 rounded-2xl glass flex items-center justify-center ${action.color} group-hover:scale-110 transition-transform`}>
                   <action.icon className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm">{action.label}</div>
-                  <div className="text-xs text-muted-foreground">{action.desc}</div>
+                  <div className="font-semibold text-sm text-white/90">{action.label}</div>
+                  <div className="text-xs text-white/50">{action.desc}</div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white transition-all" />
               </div>
             </Link>
           ))}
@@ -130,13 +115,13 @@ export default async function HomePage() {
       </section>
 
       {/* ─── Recently Added Models ────────────────────────────── */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-4 py-20">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Recently Added</h2>
-            <p className="text-sm text-muted-foreground mt-1">The latest SUVs in our database</p>
+            <h2 className="text-2xl font-bold tracking-tight text-white/90">Recently Added</h2>
+            <p className="text-sm text-white/50 mt-1">The latest SUVs in our database</p>
           </div>
-          <Link href="/models" className="text-sm text-primary hover:underline flex items-center gap-1 font-medium">
+          <Link href="/models" className="text-sm text-primary hover:text-primary-foreground transition-colors flex items-center gap-1 font-medium">
             View all <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -146,9 +131,9 @@ export default async function HomePage() {
             const img = getCarImage(model.slug)
             return (
               <Link key={model.id} href={`/models/${model.slug}`}>
-                <div className="glass-card rounded-xl overflow-hidden group" style={{ animationDelay: `${idx * 0.1}s` }}>
+                <div className="glass-card overflow-hidden group" style={{ animationDelay: `${idx * 0.1}s` }}>
                   {/* Image area */}
-                  <div className="h-44 bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center overflow-hidden relative">
+                  <div className="h-44 bg-white/5 flex items-center justify-center overflow-hidden relative">
                     {img ? (
                       <Image
                         src={img}
@@ -158,20 +143,20 @@ export default async function HomePage() {
                         className="object-contain group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <Car className="w-16 h-16 text-muted-foreground/30" />
+                      <Car className="w-16 h-16 text-white/10" />
                     )}
                     {/* Year badge */}
-                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-xs font-medium text-primary">
+                    <div className="absolute top-3 right-3 px-2 py-0.5 rounded-lg glass text-xs font-medium text-white/80">
                       {model.launchYear}
                     </div>
                   </div>
 
                   {/* Info */}
                   <div className="p-5">
-                    <div className="text-xs text-primary font-medium uppercase tracking-wider">{model.manufacturer.name}</div>
-                    <h3 className="text-lg font-semibold mt-1 group-hover:text-primary transition-colors">{model.name}</h3>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/50 text-xs text-muted-foreground">
+                    <div className="text-xs text-white/40 font-medium uppercase tracking-wider">{model.manufacturer.name}</div>
+                    <h3 className="text-lg font-semibold mt-1 text-white/90">{model.name}</h3>
+                    <div className="flex items-center gap-2 mt-3">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-white/5 text-[11px] font-medium text-white/60">
                         {model.bodyType}
                       </span>
                     </div>
@@ -184,16 +169,16 @@ export default async function HomePage() {
       </section>
 
       {/* ─── Top Value for Money ──────────────────────────────── */}
-      <section className="container mx-auto px-4 pb-16">
+      <section className="container mx-auto px-4 pb-20">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-amber-400" />
+            <h2 className="text-2xl font-bold tracking-tight text-white/90 flex items-center gap-2">
+              <Trophy className="w-6 h-6 text-yellow-500" />
               Top Value for Money
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">Best bang for your buck</p>
+            <p className="text-sm text-white/50 mt-1">Best bang for your buck</p>
           </div>
-          <Link href="/rankings/Value%20for%20Money" className="text-sm text-primary hover:underline flex items-center gap-1 font-medium">
+          <Link href="/rankings/Value%20for%20Money" className="text-sm text-primary hover:text-primary-foreground transition-colors flex items-center gap-1 font-medium">
             Full rankings <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -202,28 +187,28 @@ export default async function HomePage() {
           <div className="space-y-3">
             {topValueVariants.map((variant, idx) => (
               <Link key={variant.id} href={`/variants/${variant.slug}`} className="block">
-                <div className="glass-card rounded-xl p-5 flex items-center gap-5 group">
+                <div className="glass-card p-5 flex items-center gap-5 group">
                   {/* Rank */}
                   <div className={`text-3xl font-extrabold w-12 text-center ${
-                    idx === 0 ? 'rank-gold' : idx === 1 ? 'rank-silver' : idx === 2 ? 'rank-bronze' : 'text-muted-foreground'
+                    idx === 0 ? 'rank-gold' : idx === 1 ? 'rank-silver' : idx === 2 ? 'rank-bronze' : 'text-white/30'
                   }`}>
                     {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-base group-hover:text-primary transition-colors">
+                    <div className="font-semibold text-base text-white/90">
                       {variant.model.manufacturer.name} {variant.model.name}
                     </div>
-                    <div className="text-sm text-muted-foreground">{variant.name}</div>
+                    <div className="text-sm text-white/50 mt-0.5">{variant.name}</div>
                   </div>
 
                   {/* Score + Price */}
                   <div className="text-right shrink-0">
-                    <div className="score-badge text-sm font-bold">
-                      {variant.score}<span className="text-muted-foreground font-normal">/1000</span>
+                    <div className="score-badge text-sm font-bold text-white/90">
+                      {variant.score}<span className="text-white/50 font-normal">/1000</span>
                     </div>
-                    <div className="text-lg font-bold mt-1">
+                    <div className="text-lg font-bold mt-2 text-white/90">
                       {(variant.prices[0]?.priceInrLakh || 0) > 0 ? formatCurrencyLakh(variant.prices[0]?.priceInrLakh || 0) : 'TBA'}
                     </div>
                   </div>
@@ -232,27 +217,27 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="glass-card rounded-xl p-12 text-center">
-            <BarChart3 className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-            <p className="text-muted-foreground">Rankings are being calculated...</p>
+          <div className="glass-card p-12 text-center">
+            <BarChart3 className="w-12 h-12 text-white/10 mx-auto mb-4" />
+            <p className="text-white/50">Rankings are being calculated...</p>
           </div>
         )}
       </section>
 
       {/* ─── CTA Banner ──────────────────────────────────────── */}
-      <section className="container mx-auto px-4 pb-16">
-        <div className="rounded-2xl overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20"></div>
+      <section className="container mx-auto px-4 pb-20">
+        <div className="rounded-[2rem] overflow-hidden relative glass border border-white/10">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 pointer-events-none"></div>
           <div className="relative p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl md:text-3xl font-bold">Ready to compare?</h3>
-              <p className="text-muted-foreground mt-2 max-w-md">
+              <h3 className="text-2xl md:text-3xl font-bold text-white/90">Ready to compare?</h3>
+              <p className="text-white/60 mt-2 max-w-md">
                 Pick any two variants and see exactly how they stack up — feature by feature, spec by spec.
               </p>
             </div>
             <Link
               href="/compare"
-              className="px-8 py-3.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity flex items-center gap-2 shrink-0"
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-2xl transition-all flex items-center gap-2 shrink-0 backdrop-blur-xl"
             >
               <GitCompareArrows className="w-5 h-5" />
               Start Comparing
