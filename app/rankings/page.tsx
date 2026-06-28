@@ -1,6 +1,6 @@
 import { getAllRankingsCategories } from '@/lib/rankings'
 import Link from 'next/link'
-import { Trophy, Star, Shield, Zap, BarChart3, ArrowRight } from 'lucide-react'
+import { Trophy, Star, Shield, Zap, BarChart3 } from 'lucide-react'
 
 const categoryIcons: Record<string, typeof Trophy> = {
   'Value for Money': Star,

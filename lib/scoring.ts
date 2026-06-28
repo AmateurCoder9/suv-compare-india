@@ -68,7 +68,7 @@ export const MERCEDES_MATRIX = {
   refinement:         6,
 } as const  // Total: 100
 
-export function determineWinner(rows: any[], variants: any[]) {
+export function determineWinner<T extends Record<string, unknown>>(rows: T[]): (T & { winnerId: string | null })[] {
   // Logic to determine winner based on rules
   return rows.map(row => ({ ...row, winnerId: null }))
 }

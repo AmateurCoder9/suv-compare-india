@@ -9,6 +9,48 @@ interface CompareEngineProps {
   options: { value: string, label: string }[]
 }
 
+interface FeatureCategory {
+  name: string
+}
+
+interface Feature {
+  name: string
+  category: FeatureCategory
+}
+
+interface VariantFeature {
+  id: number
+  value: string
+  feature: Feature
+}
+
+interface Price {
+  priceInrLakh: number
+}
+
+interface Manufacturer {
+  name: string
+}
+
+interface Model {
+  name: string
+  manufacturer: Manufacturer
+}
+
+interface VariantComparisonData {
+  id: number
+  name: string
+  slug: string
+  model: Model
+  prices: Price[]
+  features: VariantFeature[]
+}
+
+interface ComparisonResponse {
+  v1: VariantComparisonData
+  v2: VariantComparisonData
+}
+
 export function CompareEngine({ options }: CompareEngineProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -19,15 +61,8 @@ export function CompareEngine({ options }: CompareEngineProps) {
   const [v1Slug, setV1Slug] = useState(v1Param || '')
   const [v2Slug, setV2Slug] = useState(v2Param || '')
   
-  const [comparisonData, setComparisonData] = useState<any>(null)
+  const [comparisonData, setComparisonData] = useState<ComparisonResponse | null>(null)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (v1Slug && v2Slug) {
-      router.push(`/compare?v1=${v1Slug}&v2=${v2Slug}`)
-      fetchComparison(v1Slug, v2Slug)
-    }
-  }, [v1Slug, v2Slug, router])
 
   const fetchComparison = async (v1: string, v2: string) => {
     setLoading(true)
@@ -44,6 +79,15 @@ export function CompareEngine({ options }: CompareEngineProps) {
     }
   }
 
+  useEffect(() => {
+    if (v1Slug && v2Slug) {
+      router.push(`/compare?v1=${v1Slug}&v2=${v2Slug}`)
+      Promise.resolve().then(() => {
+        fetchComparison(v1Slug, v2Slug)
+      })
+    }
+  }, [v1Slug, v2Slug, router])
+
   const swapVariants = () => {
     setV1Slug(v2Slug)
     setV2Slug(v1Slug)
@@ -52,7 +96,7 @@ export function CompareEngine({ options }: CompareEngineProps) {
   const getCategories = () => {
     if (!comparisonData) return []
     const catSet = new Set<string>()
-    const addCats = (v: any) => v.features.forEach((f: any) => catSet.add(f.feature.category.name))
+    const addCats = (v: VariantComparisonData) => v.features.forEach((f) => catSet.add(f.feature.category.name))
     addCats(comparisonData.v1)
     addCats(comparisonData.v2)
     return Array.from(catSet)
@@ -61,8 +105,8 @@ export function CompareEngine({ options }: CompareEngineProps) {
   const getFeaturesForCategory = (category: string) => {
     if (!comparisonData) return []
     const featMap = new Map<string, string>()
-    const addFeats = (v: any) => {
-      v.features.filter((f: any) => f.feature.category.name === category).forEach((f: any) => {
+    const addFeats = (v: VariantComparisonData) => {
+      v.features.filter((f) => f.feature.category.name === category).forEach((f) => {
         featMap.set(f.feature.name, f.feature.name)
       })
     }
@@ -71,8 +115,8 @@ export function CompareEngine({ options }: CompareEngineProps) {
     return Array.from(featMap.values())
   }
 
-  const getFeatureStatus = (variant: any, featureName: string) => {
-    const feat = variant.features.find((f: any) => f.feature.name === featureName)
+  const getFeatureStatus = (variant: VariantComparisonData, featureName: string) => {
+    const feat = variant.features.find((f) => f.feature.name === featureName)
     if (!feat) return 'Not Available'
     if (feat.value === 'YES' || feat.value === 'STANDARD') return 'Standard'
     if (feat.value === 'OPTIONAL') return 'Optional'

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { GlobalSearchBar } from './global-search-bar'
 import { useState } from 'react'
-import { Menu, X, Car, BarChart3, GitCompareArrows, BookOpen, Trophy } from 'lucide-react'
+import { Menu, X, Car, GitCompareArrows, BookOpen, Trophy } from 'lucide-react'
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
