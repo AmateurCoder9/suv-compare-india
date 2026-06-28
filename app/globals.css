@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -22,58 +21,62 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --radius-xl: 1.5rem;
 }
 
 :root {
-  /* True Black iOS Dark Mode Theme */
-  --background: oklch(0 0 0); /* True Black */
-  --foreground: oklch(0.98 0 0);
+  /* High-contrast, clean, data-first light mode */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.15 0 0);
   
-  --card: oklch(0.1 0 0 / 0.6); 
-  --card-foreground: oklch(0.98 0 0);
+  --card: oklch(0.98 0 0);
+  --card-foreground: oklch(0.15 0 0);
   
-  --popover: oklch(0.1 0 0 / 0.8);
-  --popover-foreground: oklch(0.98 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0 0);
   
-  /* iOS Blue/Indigo primary */
-  --primary: oklch(0.6 0.2 250);
+  --primary: oklch(0.25 0 0);
   --primary-foreground: oklch(0.98 0 0);
   
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.95 0 0);
+  --secondary-foreground: oklch(0.15 0 0);
   
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.65 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.45 0 0);
   
-  --accent: oklch(0.15 0 0 / 0.5);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.95 0 0);
+  --accent-foreground: oklch(0.15 0 0);
   
-  --border: oklch(0.2 0 0);
-  --input: oklch(0.15 0 0);
-  --ring: oklch(0.6 0.2 250 / 0.5);
-  
-  --radius: 1rem;
+  --border: oklch(0.85 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.3 0 0);
 }
 
 .dark {
-  --background: oklch(0 0 0); /* True Black */
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.1 0 0 / 0.6); 
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.1 0 0 / 0.8);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.6 0.2 250);
-  --primary-foreground: oklch(0.98 0 0);
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.15 0 0 / 0.5);
-  --accent-foreground: oklch(0.98 0 0);
-  --border: oklch(0.2 0 0);
-  --input: oklch(0.15 0 0);
-  --ring: oklch(0.6 0.2 250 / 0.5);
+  /* High-contrast, clean, data-first dark mode */
+  --background: oklch(0.1 0 0);
+  --foreground: oklch(0.95 0 0);
+  
+  --card: oklch(0.13 0 0);
+  --card-foreground: oklch(0.95 0 0);
+  
+  --popover: oklch(0.12 0 0);
+  --popover-foreground: oklch(0.95 0 0);
+  
+  --primary: oklch(0.85 0 0);
+  --primary-foreground: oklch(0.1 0 0);
+  
+  --secondary: oklch(0.18 0 0);
+  --secondary-foreground: oklch(0.95 0 0);
+  
+  --muted: oklch(0.18 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+  
+  --accent: oklch(0.18 0 0);
+  --accent-foreground: oklch(0.95 0 0);
+  
+  --border: oklch(0.25 0 0);
+  --input: oklch(0.2 0 0);
+  --ring: oklch(0.7 0 0);
 }
 
 @layer base {
@@ -82,70 +85,37 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #000000;
   }
 }
 
-/* iOS Glassmorphism */
-.glass {
-  background: rgba(30, 30, 30, 0.4);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.glass-card {
-  background: rgba(30, 30, 30, 0.4);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-xl);
-  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+/* Base structural layout classes (replacing all glassmorphism / fancy shadows) */
+.glass, .glass-card {
+  @apply bg-card border border-border rounded-lg shadow-sm transition-none;
 }
 
 .glass-card:hover {
-  background: rgba(45, 45, 45, 0.5);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: scale(1.01);
+  @apply border-border transform-none shadow-sm;
 }
 
-/* Typography & Gradients */
-.gradient-text {
-  background: linear-gradient(135deg, #fff, #888);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Animations */
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out forwards;
-}
-
-/* Rank Medals */
-.rank-gold { color: #FFD700; }
-.rank-silver { color: #C0C0C0; }
-.rank-bronze { color: #CD7F32; }
-
-/* Score badge */
 .score-badge {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  backdrop-filter: blur(12px);
+  @apply bg-secondary border border-border rounded px-2 py-0.5 font-mono text-xs text-foreground/80;
+}
+
+.gradient-text, .gradient-text-warm {
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  @apply text-foreground font-bold;
+}
+
+/* Compact data styling */
+.data-table {
+  @apply w-full border-collapse text-left text-sm;
+}
+
+.data-table th {
+  @apply p-2.5 bg-muted text-muted-foreground font-semibold border-b border-border;
+}
+
+.data-table td {
+  @apply p-2.5 border-b border-border/50;
 }
