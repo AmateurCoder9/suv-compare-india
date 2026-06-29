@@ -4,39 +4,38 @@ import { db } from '@/lib/db'
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const v1Slug = searchParams.get('v1')
-    const v2Slug = searchParams.get('v2')
+    const slugsParam = searchParams.get('slugs')
+    let slugs: string[] = []
 
-    if (!v1Slug || !v2Slug) {
-      return NextResponse.json({ error: 'Both v1 and v2 parameters are required' }, { status: 400 })
+    if (slugsParam) {
+      slugs = slugsParam.split(',').map(s => s.trim()).filter(Boolean)
+    } else {
+      const v1 = searchParams.get('v1')
+      const v2 = searchParams.get('v2')
+      if (v1) slugs.push(v1)
+      if (v2) slugs.push(v2)
     }
 
-    const [v1, v2] = await Promise.all([
-      db.variant.findUnique({
-        where: { slug: v1Slug },
-        include: {
-          model: { include: { manufacturer: true } },
-          scores: { include: { category: true } },
-          features: { include: { feature: { include: { category: true } } } },
-          prices: { orderBy: { priceInrLakh: 'asc' }, take: 1 }
-        }
-      }),
-      db.variant.findUnique({
-        where: { slug: v2Slug },
-        include: {
-          model: { include: { manufacturer: true } },
-          scores: { include: { category: true } },
-          features: { include: { feature: { include: { category: true } } } },
-          prices: { orderBy: { priceInrLakh: 'asc' }, take: 1 }
-        }
-      })
-    ])
-
-    if (!v1 || !v2) {
-      return NextResponse.json({ error: 'One or both variants not found' }, { status: 404 })
+    if (slugs.length === 0) {
+      return NextResponse.json({ error: 'At least one variant slug is required' }, { status: 400 })
     }
 
-    return NextResponse.json({ v1, v2 })
+    const variants = await db.variant.findMany({
+      where: { slug: { in: slugs } },
+      include: {
+        model: { include: { manufacturer: true } },
+        scores: { include: { category: true } },
+        features: { include: { feature: { include: { category: true } } } },
+        prices: { orderBy: { priceInrLakh: 'asc' }, take: 1 }
+      }
+    })
+
+    // Sort variants to match the original order in slugs array
+    const orderedVariants = slugs
+      .map(slug => variants.find(v => v.slug === slug))
+      .filter(Boolean)
+
+    return NextResponse.json({ variants: orderedVariants })
   } catch (error) {
     console.error('Error fetching variants for comparison:', error)
     return NextResponse.json({ error: 'Failed to fetch variants for comparison' }, { status: 500 })
