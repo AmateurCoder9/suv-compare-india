@@ -9,8 +9,8 @@ import * as cheerio from 'cheerio'
 const prisma = new PrismaClient()
 
 const PUBLIC_MEDIA_DIR = path.join(process.cwd(), 'public', 'media')
-const MIN_WIDTH = 800
-const MIN_HEIGHT = 600
+const MIN_WIDTH = 200
+const MIN_HEIGHT = 150
 
 // Categories from the spec
 const CATEGORIES = [
