@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Feature, ScoreCategory } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -209,7 +209,7 @@ async function main() {
   await prisma.manufacturer.deleteMany()
 
   console.log('Seeding Feature Categories & Features...')
-  const dbFeatures: Record<string, any> = {}
+  const dbFeatures: Record<string, Feature> = {}
   
   for (const cat of featureCategories) {
     const category = await prisma.featureCategory.create({
@@ -235,7 +235,7 @@ async function main() {
   }
 
   console.log('Seeding Score Categories...')
-  const dbScoreCats: Record<string, any> = {}
+  const dbScoreCats: Record<string, ScoreCategory> = {}
   for (const sc of scoreCategories) {
     const dbSc = await prisma.scoreCategory.create({
       data: {
@@ -353,9 +353,7 @@ async function main() {
       }
 
       // 3. Seed Scores
-      let baseScore = 600
-      if (isTopTrim) baseScore = 880
-      else if (!isBaseTrim) baseScore = 750 // mid trim
+
       
       // Calculate scores for categories
       const valueScore = isBaseTrim ? 180 : isTopTrim ? 120 : 155
