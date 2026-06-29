@@ -16,7 +16,8 @@ export async function getTopVariantsByCategory(categoryName: string, limit: numb
         include: {
           model: {
             include: {
-              manufacturer: true
+              manufacturer: true,
+              media: true
             }
           },
           prices: {
