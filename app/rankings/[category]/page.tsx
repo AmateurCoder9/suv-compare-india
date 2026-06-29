@@ -29,7 +29,7 @@ export default async function RankingsCategoryPage({
         <div className="space-y-3">
           {variants.map((variant, idx) => (
             <Link key={variant.id} href={`/variants/${variant.slug}`} className="block">
-              <div className="glass-card rounded-xl p-5 flex items-center gap-5 group">
+              <div className="glass-card rounded-xl p-3.5 sm:p-5 flex items-center gap-3 sm:gap-5 group">
                 {/* Rank */}
                 <div className={`text-2xl font-extrabold w-12 text-center ${
                   idx === 0 ? 'rank-gold' : idx === 1 ? 'rank-silver' : idx === 2 ? 'rank-bronze' : 'text-muted-foreground'
@@ -39,10 +39,10 @@ export default async function RankingsCategoryPage({
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold group-hover:text-primary transition-colors">
+                  <div className="font-semibold text-sm sm:text-base group-hover:text-primary transition-colors">
                     {variant.model.manufacturer.name} {variant.model.name}
                   </div>
-                  <div className="text-sm text-muted-foreground">{variant.name}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">{variant.name}</div>
                 </div>
 
                 {/* Score + Price */}

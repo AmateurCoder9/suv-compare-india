@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="light">
       <body className={`${inter.className} flex flex-col min-h-screen bg-background text-foreground antialiased`}>
         <Navbar />
         <main className="flex-1">

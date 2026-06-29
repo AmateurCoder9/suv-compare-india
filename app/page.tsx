@@ -48,7 +48,7 @@ export default async function HomePage() {
       </section>
 
       {/* ─── Fast Navigation Links ────────────────────────────── */}
-      <div className="grid sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { href: '/models', icon: Car, label: 'All SUV Models' },
           { href: '/compare', icon: GitCompareArrows, label: 'Compare Variants' },
@@ -71,7 +71,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {recentModels.map(model => {
             const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
             return (
@@ -115,7 +115,7 @@ export default async function HomePage() {
         </div>
 
         {topValueVariants.length > 0 ? (
-          <div className="border border-border rounded-lg overflow-hidden bg-card">
+          <div className="border border-border rounded-lg overflow-x-auto bg-card">
             <table className="data-table">
               <thead>
                 <tr>

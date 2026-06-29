@@ -180,8 +180,8 @@ export function CompareEngine({ options }: CompareEngineProps) {
       )}
 
       {!loading && comparisonData && (
-        <div className="glass-card rounded-xl overflow-hidden">
-          <table className="w-full text-left">
+        <div className="glass-card rounded-xl overflow-x-auto">
+          <table className="w-full text-left min-w-[600px] md:min-w-0">
             <thead>
               <tr className="border-b border-border/30">
                 <th className="p-5 font-medium text-muted-foreground text-sm uppercase tracking-wider w-1/3">Feature</th>
