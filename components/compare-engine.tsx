@@ -3,7 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { formatCurrencyLakh } from '@/lib/formatters'
-import { Check, X, Loader2 } from 'lucide-react'
+import { Check, X, Loader2, GitCompare } from 'lucide-react'
+import { FeatureHeatmap } from '@/components/compare/FeatureHeatmap'
+import { MobileSwipeCompare } from '@/components/compare/MobileSwipeCompare'
+import { ScoreRadarChart } from '@/components/score-radar-chart'
 
 interface CompareEngineProps {
   options: { value: string, label: string }[]
@@ -14,6 +17,7 @@ interface FeatureCategory {
 }
 
 interface Feature {
+  id: number
   name: string
   category: FeatureCategory
 }
@@ -37,6 +41,16 @@ interface Model {
   manufacturer: Manufacturer
 }
 
+interface ScoreCategory {
+  name: string
+}
+
+interface VariantScore {
+  id: number
+  score: number
+  category: ScoreCategory
+}
+
 interface VariantComparisonData {
   id: number
   name: string
@@ -44,6 +58,7 @@ interface VariantComparisonData {
   model: Model
   prices: Price[]
   features: VariantFeature[]
+  scores: VariantScore[]
 }
 
 interface ComparisonResponse {
@@ -129,41 +144,31 @@ export function CompareEngine({ options }: CompareEngineProps) {
     }
   }
 
-  const getCategories = () => {
-    if (!comparisonData || !comparisonData.variants) return []
-    const catSet = new Set<string>()
-    comparisonData.variants.forEach(v => {
-      v.features.forEach((f) => catSet.add(f.feature.category.name))
+  const getRadarComparisonData = () => {
+    if (!comparisonData || !comparisonData.variants || comparisonData.variants.length !== 2) return undefined
+    const [vA, vB] = comparisonData.variants
+    
+    const categoriesSet = new Set<string>()
+    vA.scores.forEach(s => categoriesSet.add(s.category.name))
+    vB.scores.forEach(s => categoriesSet.add(s.category.name))
+    
+    // Sort so Overall score is excluded or listed cleanly
+    const list = Array.from(categoriesSet).filter(cat => cat !== 'Overall')
+    
+    return list.map(cat => {
+      const scoreA = vA.scores.find(s => s.category.name === cat)?.score || 0
+      const scoreB = vB.scores.find(s => s.category.name === cat)?.score || 0
+      return {
+        category: cat,
+        scoreA,
+        scoreB,
+        variantNameA: `${vA.model.name} ${vA.name}`,
+        variantNameB: `${vB.model.name} ${vB.name}`
+      }
     })
-    return Array.from(catSet)
   }
 
-  const getFeaturesForCategory = (category: string) => {
-    if (!comparisonData || !comparisonData.variants) return []
-    const featMap = new Map<string, string>()
-    comparisonData.variants.forEach(v => {
-      v.features
-        .filter((f) => f.feature.category.name === category)
-        .forEach((f) => {
-          featMap.set(f.feature.name, f.feature.name)
-        })
-    })
-    return Array.from(featMap.values())
-  }
-
-  const getFeatureStatus = (variant: VariantComparisonData, featureName: string) => {
-    const feat = variant.features.find((f) => f.feature.name === featureName)
-    if (!feat) return 'Not Available'
-    if (feat.value === 'YES' || feat.value === 'STANDARD') return 'Standard'
-    if (feat.value === 'OPTIONAL') return 'Optional'
-    return 'Not Available'
-  }
-
-  const renderStatus = (status: string) => {
-    if (status === 'Standard') return <Check className="h-4 w-4 text-emerald-600 mx-auto" />
-    if (status === 'Optional') return <span className="text-xs text-amber-600 font-medium">Optional</span>
-    return <X className="h-4 w-4 text-red-400 mx-auto" />
-  }
+  const radarComparisonData = getRadarComparisonData()
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -177,7 +182,7 @@ export function CompareEngine({ options }: CompareEngineProps) {
                 {selectedSlugs.length > 2 && (
                   <button
                     onClick={() => removeSelector(idx)}
-                    className="text-[10px] text-red-500 font-semibold hover:underline"
+                    className="text-[10px] text-red-500 font-semibold hover:underline cursor-pointer"
                   >
                     Remove
                   </button>
@@ -217,45 +222,29 @@ export function CompareEngine({ options }: CompareEngineProps) {
       )}
 
       {!loading && comparisonData && comparisonData.variants && comparisonData.variants.length > 0 && (
-        <div className="border border-border rounded-lg overflow-x-auto bg-card">
-          <table className="w-full text-left min-w-[600px] md:min-w-0">
-            <thead>
-              <tr className="border-b border-border/30 bg-muted/20">
-                <th className="p-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider w-1/5">Feature</th>
-                {comparisonData.variants.map((v) => (
-                  <th key={v.id} className="p-3 text-center border-l border-border/30 w-1/4">
-                    <div className="font-semibold text-xs md:text-sm text-foreground">{v.model.manufacturer.name} {v.model.name}</div>
-                    <div className="text-[11px] text-muted-foreground font-normal mt-0.5">{v.name}</div>
-                    <div className="score-badge font-mono text-[10px] mt-2 inline-block">
-                      {(v.prices[0]?.priceInrLakh || 0) > 0 ? formatCurrencyLakh(v.prices[0]?.priceInrLakh || 0) : 'TBA'}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {getCategories().map(cat => (
-                <optgroup key={cat} label={cat} className="contents">
-                  <tr className="bg-muted/40">
-                    <td colSpan={comparisonData.variants.length + 1} className="p-2 font-bold text-xs uppercase tracking-wider text-foreground/80">{cat}</td>
-                  </tr>
-                  {getFeaturesForCategory(cat).map(featName => (
-                    <tr key={featName} className="border-b border-border/10 hover:bg-muted/20 transition-colors">
-                      <td className="p-3 text-xs font-medium text-foreground">{featName}</td>
-                      {comparisonData.variants.map(v => {
-                        const status = getFeatureStatus(v, featName)
-                        return (
-                          <td key={v.id} className="p-3 text-center border-l border-border/10">
-                            {renderStatus(status)}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  ))}
-                </optgroup>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-6">
+          {/* Radar Chart Overlay Panel (only for exactly 2 vehicles) */}
+          {radarComparisonData && (
+            <div className="border border-border bg-card rounded-xl p-5 shadow-[var(--shadow-sm)]">
+              <div className="flex items-center gap-2 border-b border-border pb-3 mb-4">
+                <GitCompare className="w-5 h-5 text-[var(--accent-color)]" />
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Score Overlay Mapping</h3>
+              </div>
+              <div className="w-full max-w-md mx-auto">
+                <ScoreRadarChart data={[]} comparisonData={radarComparisonData} />
+              </div>
+            </div>
+          )}
+
+          {/* Desktop/Tablet Heatmap View */}
+          <div className="hidden md:block">
+            <FeatureHeatmap variants={comparisonData.variants} />
+          </div>
+
+          {/* Mobile Swipe View */}
+          <div className="block md:hidden">
+            <MobileSwipeCompare variants={comparisonData.variants} />
+          </div>
         </div>
       )}
 

@@ -81,6 +81,11 @@ model Variant {
   variantBefore   VariantProgression? @relation("Before")
   variantAfter    VariantProgression? @relation("After")
 
+  buyIfText       String?
+  skipIfText      String?
+  alternativeSlug String?
+  colorOptions    String?
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

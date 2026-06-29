@@ -8,6 +8,12 @@ import Image from 'next/image'
 
 import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
+// Import new Buyer Intelligence components
+import { ShortlistButton } from '@/components/shortlist/ShortlistButton'
+import { PersonaTag } from '@/components/persona/PersonaTag'
+import { VariantDelta } from '@/components/variant-delta/VariantDelta'
+import { assignPersonaTags } from '@/lib/persona-engine'
+
 export default async function ModelOverviewPage({
   params
 }: {
@@ -22,7 +28,9 @@ export default async function ModelOverviewPage({
       variants: {
         orderBy: { displayOrder: 'asc' },
         include: {
-          prices: { orderBy: { priceInrLakh: 'asc' }, take: 1 }
+          prices: { orderBy: { priceInrLakh: 'asc' }, take: 1 },
+          scores: { include: { category: true } },
+          features: { include: { feature: true } }
         }
       }
     }
@@ -35,13 +43,20 @@ export default async function ModelOverviewPage({
   const maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0
   const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
 
+  // Construct modelVariants list for trim upgrade explainer
+  const modelVariants = model.variants.map(v => ({
+    name: v.name,
+    slug: v.slug,
+    price: v.prices[0]?.priceInrLakh || 0
+  })).filter(v => v.price > 0)
+
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-12">
       {/* Hero section */}
-      <div className="glass-card rounded-2xl overflow-hidden">
+      <div className="border border-border bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-sm)]">
         <div className="grid md:grid-cols-2 gap-0">
           {/* Image */}
-          <div className="h-64 md:h-auto bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center p-8">
+          <div className="h-64 md:h-auto bg-muted/20 flex items-center justify-center p-8">
             {img ? (
               <Image
                 src={img}
@@ -51,7 +66,7 @@ export default async function ModelOverviewPage({
                 className="object-contain drop-shadow-lg"
               />
             ) : (
-              <div className="flex flex-col items-center gap-2 text-white/20">
+              <div className="flex flex-col items-center gap-2 text-muted-foreground/30">
                 <Car className="w-16 h-16" />
                 <span className="text-[11px] font-medium tracking-wide">Official image unavailable.</span>
               </div>
@@ -60,17 +75,17 @@ export default async function ModelOverviewPage({
           
           {/* Info */}
           <div className="p-8 flex flex-col justify-center">
-            <div className="text-xs text-primary font-medium uppercase tracking-wider">{model.manufacturer.name}</div>
+            <div className="text-xs text-[var(--accent-color)] font-bold uppercase tracking-wider">{model.manufacturer.name}</div>
             <h1 className="text-3xl font-bold tracking-tight mt-1">{model.name}</h1>
             <div className="flex flex-wrap gap-2 mt-3">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent/50 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary border border-border text-xs text-muted-foreground font-semibold">
                 {model.bodyType}
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent/50 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary border border-border text-xs text-muted-foreground font-semibold">
                 Launched {model.launchYear}
               </span>
               {model.generationName && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-accent/50 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary border border-border text-xs text-muted-foreground font-semibold">
                   {model.generationName}
                 </span>
               )}
@@ -80,8 +95,8 @@ export default async function ModelOverviewPage({
             {minPrice > 0 && maxPrice > 0 && (
               <div className="mt-6 space-y-2">
                 <div className="flex items-center gap-2 text-sm font-medium">
-                  <Tag className="w-4 h-4 text-primary" />
-                  Price Range
+                  <Tag className="w-4 h-4 text-[var(--accent-color)]" />
+                  Delhi Price Range
                 </div>
                 <div className="max-w-sm">
                   <PriceRangeBar 
@@ -100,43 +115,71 @@ export default async function ModelOverviewPage({
       {/* Variants list */}
       <div>
         <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">
-          Variants
+          Variants Trims
           <span className="text-sm font-normal text-muted-foreground">({model.variants.length})</span>
         </h2>
         <div className="space-y-3">
-          {model.variants.map((variant) => (
-            <Link key={variant.id} href={`/variants/${variant.slug}`}>
-              <div className="glass-card rounded-xl p-5 flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-accent/50 flex items-center justify-center">
-                    <Car className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold group-hover:text-primary transition-colors">{variant.name}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {variant.isBase ? '⭐ Base Model' : 'Higher Trim'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="font-bold text-lg">
-                      {(variant.prices[0]?.priceInrLakh || 0) > 0 ? formatCurrencyLakh(variant.prices[0]?.priceInrLakh || 0) : 'TBA'}
+          {model.variants.map((variant) => {
+            const personaTags = assignPersonaTags({
+              slug: variant.slug,
+              name: variant.name,
+              prices: variant.prices,
+              scores: variant.scores,
+              features: variant.features.map(f => ({ value: f.value }))
+            })
+
+            return (
+              <Link key={variant.id} href={`/variants/${variant.slug}`}>
+                <div className="border border-border bg-card rounded-xl p-5 flex items-center justify-between group hover:border-[var(--accent-color)]/30 transition-all duration-150 relative">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center border border-border">
+                      <Car className="w-5 h-5 text-muted-foreground" />
                     </div>
-                    <div className="text-xs text-muted-foreground">Ex-showroom</div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold group-hover:text-[var(--accent-color)] transition-colors">{variant.name}</h3>
+                        <ShortlistButton slug={variant.slug} variantName={`${model.name} ${variant.name}`} />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {variant.isBase ? '⭐ Base Trim' : 'Higher Trim'}
+                      </p>
+                      {/* Persona badges */}
+                      {personaTags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          {personaTags.map(tag => (
+                            <PersonaTag key={tag} tag={tag} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <div className="font-mono font-bold text-base">
+                        {(variant.prices[0]?.priceInrLakh || 0) > 0 ? formatCurrencyLakh(variant.prices[0]?.priceInrLakh || 0) : 'TBA'}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground uppercase font-semibold">Ex-showroom</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-[var(--accent-color)] group-hover:translate-x-1 transition-all" />
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            )
+          })}
           {model.variants.length === 0 && (
-            <div className="glass-card rounded-xl p-12 text-center">
+            <div className="border border-border bg-card rounded-xl p-12 text-center shadow-[var(--shadow-sm)]">
               <p className="text-muted-foreground">No variants found for this model.</p>
             </div>
           )}
         </div>
       </div>
+
+      {/* Trim Upgrade Explainer */}
+      {modelVariants.length >= 2 && (
+        <section className="space-y-4 pt-4 border-t border-border">
+          <VariantDelta modelVariants={modelVariants} />
+        </section>
+      )}
     </div>
   )
 }

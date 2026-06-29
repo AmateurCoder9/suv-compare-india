@@ -43,12 +43,50 @@
   --muted: oklch(0.96 0 0);
   --muted-foreground: oklch(0.45 0 0);
   
-  --accent: oklch(0.95 0 0);
-  --accent-foreground: oklch(0.15 0 0);
+  --accent: #007AFF;
+  --accent-foreground: #FFFFFF;
   
   --border: oklch(0.85 0 0);
   --input: oklch(0.9 0 0);
   --ring: oklch(0.3 0 0);
+
+  /* Surfaces */
+  --surface-0: #FFFFFF;          /* page background */
+  --surface-1: #F5F5F7;          /* card background */
+  --surface-2: #EBEBED;          /* input background, table row alt */
+  --surface-3: #DEDEE0;          /* border, divider */
+
+  /* Text */
+  --text-primary:   #1C1C1E;     /* headlines, labels */
+  --text-secondary: #555558;     /* subtext, descriptions */
+  --text-tertiary:  #8E8E93;     /* placeholders, disabled */
+
+  /* Accent */
+  --accent-color:   #007AFF;     /* iOS blue — buttons, active */
+  --accent-light:   #E8F1FF;     /* accent-tinted bg for pills, badges */
+
+  /* Semantic */
+  --green:          #34C759;     /* winner, YES feature, good score */
+  --green-light:    #EAF9EE;
+  --red:            #FF3B30;     /* NO feature, bad score */
+  --red-light:      #FFF0EF;
+  --amber:          #FF9500;     /* warning, OPTIONAL feature, mid score */
+  --amber-light:    #FFF5E6;
+
+  /* Score band colors */
+  --score-excellent: #34C759;
+  --score-good:      #007AFF;
+  --score-average:   #FF9500;
+  --score-poor:      #FF3B30;
+
+  /* Layout */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.10);
+  --font-sans:  -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  --font-mono:  'SF Mono', 'Fira Code', monospace;
 }
 
 .dark {

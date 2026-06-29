@@ -278,14 +278,107 @@ async function main() {
     })
 
     let order = 1
-    for (const vData of md.variants) {
+    for (let i = 0; i < md.variants.length; i++) {
+      const vData = md.variants[i]
+
+      // Determine alternative variant slug
+      let altSlug = ''
+      if (i + 1 < md.variants.length) {
+        altSlug = slugify(`${m.name} ${md.name} ${md.variants[i+1].name}`)
+      } else if (i - 1 >= 0) {
+        altSlug = slugify(`${m.name} ${md.name} ${md.variants[i-1].name}`)
+      }
+
+      // Determine colors
+      let colors: { name: string, hex: string }[] = []
+      if (m.name === 'Kia') {
+        colors = [
+          { name: 'Gravity Grey', hex: '#6B7280' },
+          { name: 'Imperial Blue', hex: '#1E3A8A' },
+          { name: 'Aurora Black Pearl', hex: '#111827' },
+          { name: 'Glacier White Pearl', hex: '#F9FAFB' },
+          { name: 'Pewter Olive', hex: '#5F6F52' },
+          { name: 'Intense Red', hex: '#DC2626' }
+        ]
+      } else if (m.name === 'Hyundai') {
+        colors = [
+          { name: 'Abyss Black', hex: '#111827' },
+          { name: 'Atlas White', hex: '#F9FAFB' },
+          { name: 'Titan Grey', hex: '#4B5563' },
+          { name: 'Fiery Red', hex: '#DC2626' },
+          { name: 'Ranger Khaki', hex: '#4D5D53' },
+          { name: 'Robusto Blue', hex: '#1E40AF' }
+        ]
+      } else if (m.name === 'Volkswagen') {
+        colors = [
+          { name: 'Wild Cherry Red', hex: '#B91C1C' },
+          { name: 'Curcuma Yellow', hex: '#D97706' },
+          { name: 'Candy White', hex: '#F9FAFB' },
+          { name: 'Carbon Steel Grey', hex: '#374151' },
+          { name: 'Reflex Silver', hex: '#9CA3AF' }
+        ]
+      } else if (m.name === 'Skoda') {
+        colors = [
+          { name: 'Tornado Red', hex: '#991B1B' },
+          { name: 'Honey Orange', hex: '#EA580C' },
+          { name: 'Candy White', hex: '#F9FAFB' },
+          { name: 'Carbon Steel Grey', hex: '#374151' },
+          { name: 'Brilliant Silver', hex: '#D1D5DB' }
+        ]
+      } else if (m.name === 'Honda') {
+        colors = [
+          { name: 'Phoenix Orange Pearl', hex: '#EA580C' },
+          { name: 'Obsidian Blue Pearl', hex: '#1E3A8A' },
+          { name: 'Radiant Red Metallic', hex: '#DC2626' },
+          { name: 'Platinum White Pearl', hex: '#F9FAFB' },
+          { name: 'Golden Brown Metallic', hex: '#78350F' },
+          { name: 'Lunar Silver Metallic', hex: '#9CA3AF' }
+        ]
+      } else if (m.name === 'MG') {
+        colors = [
+          { name: 'Starry Black', hex: '#111827' },
+          { name: 'Candy White', hex: '#F9FAFB' },
+          { name: 'Aurora Silver', hex: '#D1D5DB' },
+          { name: 'Glaze Red', hex: '#B91C1C' },
+          { name: 'Havana Grey', hex: '#4B5563' }
+        ]
+      } else { // Citroen
+        colors = [
+          { name: 'Polar White', hex: '#F9FAFB' },
+          { name: 'Steel Grey', hex: '#6B7280' },
+          { name: 'Platinum Grey', hex: '#374151' },
+          { name: 'Cosmo Blue', hex: '#1E3A8A' }
+        ]
+      }
+
+      // Determine buyIfText and skipIfText
+      const isTopTrim = ['gtx', 'x-line', 'savvy', 'sharp', 'monte carlo', 'style', 'topline', 'gt plus', 'zx', 'shine+'].some(
+        keyword => vData.name.toLowerCase().includes(keyword)
+      )
+      const isBaseTrim = vData.isBase
+
+      let buyIfText = `You want a balanced trim that offers essential conveniences like a rear camera and alloys without paying top-spec premiums.`
+      let skipIfText = `You want the absolute safety assurance of ADAS and 6 airbags, or high-end luxury details.`
+      
+      if (isBaseTrim) {
+        buyIfText = `You want a solid, spacious, and reliable SUV at the lowest possible entry price.`
+        skipIfText = `You require modern creature comforts like automatic AC, sunroof, or touchscreen infotainment.`
+      } else if (isTopTrim) {
+        buyIfText = `You want premium features like ADAS, a panoramic sunroof, and ventilated seats.`
+        skipIfText = `You are on a tight budget and want the best price-to-performance ratio.`
+      }
+
       const variant = await prisma.variant.create({
         data: {
           name: vData.name,
           slug: slugify(`${m.name} ${md.name} ${vData.name}`),
           modelId: model.id,
           displayOrder: order++,
-          isBase: vData.isBase
+          isBase: vData.isBase,
+          buyIfText: buyIfText,
+          skipIfText: skipIfText,
+          alternativeSlug: altSlug,
+          colorOptions: JSON.stringify(colors)
         }
       })
 
@@ -299,12 +392,7 @@ async function main() {
         }
       })
 
-      // 2. Seed Variant Features
-      // Determine trim level (base, mid, top)
-      const isTopTrim = ['gtx', 'x-line', 'savvy', 'sharp', 'monte carlo', 'style', 'topline', 'gt plus', 'zx', 'shine+'].some(
-        keyword => variant.name.toLowerCase().includes(keyword) || variant.slug.toLowerCase().includes(keyword)
-      )
-      const isBaseTrim = vData.isBase
+
 
       for (const [featName, dbFeat] of Object.entries(dbFeatures)) {
         let value = 'NO'

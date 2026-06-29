@@ -7,6 +7,11 @@ import { Car, GitCompareArrows, Trophy, Shield } from 'lucide-react'
 import Image from 'next/image'
 import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
+// Import new Buyer Intelligence components
+import { BudgetFinder } from '@/components/budget-finder/BudgetFinder'
+import { FilterPresets } from '@/components/filter-presets/FilterPresets'
+import { PopularComparisons } from '@/components/popular-comparisons/PopularComparisons'
+
 export default async function HomePage() {
   const recentModels = await db.model.findMany({
     orderBy: { createdAt: 'desc' },
@@ -47,6 +52,20 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ─── Find My SUV Advisor Quiz Banner ─────────────────── */}
+      <section className="border border-[var(--surface-3)] bg-[var(--surface-1)] p-5 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[var(--shadow-sm)]">
+        <div className="space-y-1">
+          <h2 className="text-sm font-bold text-[var(--text-primary)]">Confused between multiple SUVs?</h2>
+          <p className="text-xs text-[var(--text-secondary)]">Take our 1-minute personalized advisor quiz to find the perfect trim match.</p>
+        </div>
+        <Link
+          href="/quiz"
+          className="inline-flex items-center justify-center bg-[var(--accent-color)] text-white text-xs font-bold px-4.5 py-2.5 rounded-[var(--radius-md)] hover:opacity-90 transition-all shrink-0 cursor-pointer text-center"
+        >
+          Find My SUV Quiz
+        </Link>
+      </section>
+
       {/* ─── Fast Navigation Links ────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
@@ -61,6 +80,14 @@ export default async function HomePage() {
           </Link>
         ))}
       </div>
+
+      {/* ─── Scenario Presets ─────────────────────────────────── */}
+      <section className="border border-[var(--surface-3)] bg-[var(--surface-1)] p-5 rounded-lg shadow-[var(--shadow-sm)]">
+        <FilterPresets />
+      </section>
+
+      {/* ─── Budget Finder ───────────────────────────────────── */}
+      <BudgetFinder />
 
       {/* ─── Recently Indexed Models ──────────────────────────── */}
       <section className="space-y-4">
@@ -103,6 +130,11 @@ export default async function HomePage() {
             )
           })}
         </div>
+      </section>
+
+      {/* ─── Popular Head-to-Head Comparisons ─────────────────── */}
+      <section className="border border-[var(--surface-3)] bg-[var(--surface-1)] p-5 rounded-lg shadow-[var(--shadow-sm)]">
+        <PopularComparisons />
       </section>
 
       {/* ─── Top Value Rankings Table ─────────────────────────── */}
