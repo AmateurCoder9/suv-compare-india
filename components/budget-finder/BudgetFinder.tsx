@@ -3,15 +3,18 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Search, Loader2, ArrowRight, GitCompare } from 'lucide-react'
+import { Search, Loader2, ArrowRight, GitCompare, Car } from 'lucide-react'
+import Image from 'next/image'
 
 interface BudgetVariant {
   variantSlug: string
   variantName: string
   modelName: string
+  modelSlug: string
   manufacturerName: string
   priceInrLakh: number
   overallScore: number
+  imageUrl?: string
 }
 
 export function BudgetFinder() {
@@ -83,11 +86,20 @@ export function BudgetFinder() {
                 key={item.variantSlug}
                 className="p-3 flex items-center justify-between text-xs hover:bg-[var(--surface-1)]/40 transition-colors gap-4"
               >
-                <div className="flex-1 truncate">
-                  <span className="font-semibold text-[var(--text-primary)]">
-                    {item.manufacturerName} {item.modelName}
-                  </span>
-                  <span className="text-[var(--text-secondary)] font-normal ml-1">({item.variantName})</span>
+                <div className="flex items-center gap-3 flex-1 overflow-hidden">
+                  <div className="w-12 h-8 bg-[var(--surface-1)] rounded flex items-center justify-center border border-[var(--surface-3)] shrink-0">
+                    {item.imageUrl ? (
+                      <Image src={item.imageUrl} alt={item.modelName} width={40} height={25} className="object-contain" />
+                    ) : (
+                      <Car className="w-4 h-4 text-[var(--text-tertiary)]" />
+                    )}
+                  </div>
+                  <div className="flex-1 truncate">
+                    <span className="font-semibold text-[var(--text-primary)]">
+                      {item.manufacturerName} {item.modelName}
+                    </span>
+                    <span className="text-[var(--text-secondary)] font-normal ml-1">({item.variantName})</span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-4 shrink-0 font-mono">
                   <span className="text-[var(--text-primary)] font-semibold">₹{item.priceInrLakh.toFixed(2)}L</span>

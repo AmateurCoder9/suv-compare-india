@@ -53,14 +53,20 @@ export default async function HomePage() {
       </section>
 
       {/* ─── Find My SUV Advisor Quiz Banner ─────────────────── */}
-      <section className="border border-[var(--surface-3)] bg-[var(--surface-1)] p-5 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[var(--shadow-sm)]">
-        <div className="space-y-1">
+      <section className="relative overflow-hidden border border-[var(--surface-3)] bg-[var(--surface-1)] p-5 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[var(--shadow-sm)]">
+        <div className="space-y-1 relative z-10">
           <h2 className="text-sm font-bold text-[var(--text-primary)]">Confused between multiple SUVs?</h2>
-          <p className="text-xs text-[var(--text-secondary)]">Take our 1-minute personalized advisor quiz to find the perfect trim match.</p>
+          <p className="text-xs text-[var(--text-secondary)] max-w-sm">Take our 1-minute personalized advisor quiz to find the perfect trim match.</p>
         </div>
+        
+        {/* Decorative background car image */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-[0.03] pointer-events-none hidden sm:flex items-center justify-end overflow-hidden">
+          <Car className="w-64 h-64 -mr-16 text-[var(--text-primary)]" />
+        </div>
+
         <Link
           href="/quiz"
-          className="inline-flex items-center justify-center bg-[var(--accent-color)] text-white text-xs font-bold px-4.5 py-2.5 rounded-[var(--radius-md)] hover:opacity-90 transition-all shrink-0 cursor-pointer text-center"
+          className="relative z-10 inline-flex items-center justify-center bg-[var(--accent-color)] text-white text-xs font-bold px-4.5 py-2.5 rounded-[var(--radius-md)] hover:opacity-90 transition-all shrink-0 cursor-pointer text-center"
         >
           Find My SUV Quiz
         </Link>
@@ -103,14 +109,14 @@ export default async function HomePage() {
             const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
             return (
               <Link key={model.id} href={`/models/${model.slug}`} className="border border-border bg-card rounded-lg overflow-hidden flex flex-col hover:border-foreground/30 transition-colors">
-                <div className="h-28 bg-muted/40 flex items-center justify-center relative p-3">
+                <div className="h-44 bg-muted/20 flex items-center justify-center relative p-4">
                   {img ? (
                     <Image
                       src={img}
                       alt={model.name}
-                      width={160}
-                      height={100}
-                      className="object-contain"
+                      width={240}
+                      height={160}
+                      className="object-contain scale-110 drop-shadow-md group-hover:scale-125 transition-transform duration-500"
                     />
                   ) : (
                     <span className="text-[10px] text-muted-foreground font-mono">No Image</span>
@@ -152,6 +158,7 @@ export default async function HomePage() {
               <thead>
                 <tr>
                   <th className="w-12 text-center">Rank</th>
+                  <th className="w-20 text-center">Vehicle</th>
                   <th>SUV Variant</th>
                   <th className="text-right">Price (Delhi Ex-Showroom)</th>
                   <th className="text-right w-32">Score (out of 1000)</th>
@@ -161,6 +168,21 @@ export default async function HomePage() {
                 {topValueVariants.map((variant, idx) => (
                   <tr key={variant.id} className="hover:bg-muted/30 transition-colors">
                     <td className="text-center font-mono text-xs">{idx + 1}</td>
+                    <td className="p-2 text-center">
+                      <div className="w-16 h-10 mx-auto bg-muted/30 rounded flex items-center justify-center">
+                        {getCarHeroImage(variant.model.slug) ? (
+                          <Image
+                            src={getCarHeroImage(variant.model.slug)!}
+                            alt={variant.model.name}
+                            width={50}
+                            height={30}
+                            className="object-contain"
+                          />
+                        ) : (
+                          <Car className="w-4 h-4 text-muted-foreground/50" />
+                        )}
+                      </div>
+                    </td>
                     <td>
                       <Link href={`/variants/${variant.slug}`} className="font-semibold text-foreground hover:underline">
                         {variant.model.manufacturer.name} {variant.model.name} <span className="font-normal text-muted-foreground text-xs">({variant.name})</span>

@@ -87,16 +87,16 @@ export default async function VariantDetailPage({
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-10">
       {/* Header Card */}
       <div className="border border-border bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-sm)]">
-        <div className="grid md:grid-cols-2 gap-0">
+        <div className="grid md:grid-cols-5 gap-0">
           {/* Image */}
-          <div className="h-64 md:h-auto bg-muted/20 flex items-center justify-center p-8 border-b md:border-b-0 md:border-r border-border">
+          <div className="md:col-span-3 h-72 md:h-auto bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-border">
             {img ? (
               <Image
                 src={img}
                 alt={`${variant.model.manufacturer.name} ${variant.model.name}`}
-                width={400}
-                height={280}
-                className="object-contain drop-shadow-md"
+                width={600}
+                height={400}
+                className="object-contain drop-shadow-xl scale-105"
               />
             ) : (
               <div className="flex flex-col items-center gap-2 text-muted-foreground/30">
@@ -107,7 +107,7 @@ export default async function VariantDetailPage({
           </div>
           
           {/* Info */}
-          <div className="p-8 flex flex-col justify-center space-y-6">
+          <div className="md:col-span-2 p-8 flex flex-col justify-center space-y-6">
             <div className="space-y-2">
               <div className="flex justify-between items-start gap-4">
                 <div>

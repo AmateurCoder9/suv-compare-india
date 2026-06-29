@@ -37,15 +37,15 @@ export default async function ModelsIndexPage() {
               const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
               return (
                 <Link key={model.id} href={`/models/${model.slug}`}>
-                  <div className="glass-card rounded-xl overflow-hidden group h-full">
-                    <div className="h-36 bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center overflow-hidden relative">
+                  <div className="glass-card rounded-xl overflow-hidden group h-full flex flex-col">
+                    <div className="h-52 bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center overflow-hidden relative">
                       {img ? (
                         <Image
                           src={img}
                           alt={`${manufacturer.name} ${model.name}`}
-                          width={220}
-                          height={140}
-                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                          width={300}
+                          height={200}
+                          className="object-contain scale-110 group-hover:scale-125 drop-shadow-md transition-transform duration-500"
                         />
                       ) : (
                         <div className="flex flex-col items-center gap-1.5 text-white/20">

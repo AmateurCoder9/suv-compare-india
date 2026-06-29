@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,9 +31,18 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Sort variants to match the original order in slugs array
+    // Sort variants to match the original order in slugs array and add imageUrl
     const orderedVariants = slugs
-      .map(slug => variants.find(v => v.slug === slug))
+      .map(slug => {
+        const v = variants.find(v => v.slug === slug)
+        if (v) {
+          return {
+            ...v,
+            imageUrl: getCarHeroImage(v.model.slug) || getFallbackCarImage(v.model.slug) || ''
+          }
+        }
+        return null
+      })
       .filter(Boolean)
 
     return NextResponse.json({ variants: orderedVariants })

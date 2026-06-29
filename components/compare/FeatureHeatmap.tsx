@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { Check, X } from 'lucide-react'
+import Image from 'next/image'
 
 interface FeatureCategory {
   name: string
@@ -27,6 +28,7 @@ interface VariantData {
     manufacturer: { name: string }
   }
   features: VariantFeature[]
+  imageUrl?: string
 }
 
 interface FeatureHeatmapProps {
@@ -60,6 +62,17 @@ export function FeatureHeatmap({ variants }: FeatureHeatmapProps) {
     if (variants.length <= 1) return false
     const firstVal = getFeatureValue(variants[0], featName)
     return variants.some(v => getFeatureValue(v, featName) !== firstVal)
+  }
+
+  const getWinnerStatus = (featName: string, val: string) => {
+    const allVals = variants.map(v => getFeatureValue(v, featName))
+    const hasYes = allVals.includes('YES') || allVals.includes('STANDARD')
+    const hasNo = allVals.includes('NO') || allVals.includes('N/A') || allVals.includes('Not Available') || allVals.includes('OPTIONAL')
+    
+    if (hasYes && hasNo && (val === 'YES' || val === 'STANDARD')) {
+      return true
+    }
+    return false
   }
 
   const renderIcon = (val: string) => {
@@ -106,9 +119,18 @@ export function FeatureHeatmap({ variants }: FeatureHeatmapProps) {
         <table className="w-full border-collapse text-left text-xs min-w-[600px]">
           <thead>
             <tr className="border-b border-[var(--surface-3)] bg-[var(--surface-1)]">
-              <th className="p-3 font-semibold text-[var(--text-secondary)] uppercase tracking-wider w-1/3">Feature</th>
+              <th className="p-3 font-semibold text-[var(--text-secondary)] uppercase tracking-wider w-1/3 sticky left-0 bg-[var(--surface-1)] z-10">Feature</th>
               {variants.map(v => (
                 <th key={v.id} className="p-3 text-center border-l border-[var(--surface-3)] w-1/4 font-semibold text-[var(--text-primary)]">
+                  <div className="flex justify-center mb-2 h-12 items-center">
+                    {v.imageUrl ? (
+                      <Image src={v.imageUrl} alt={v.model.name} width={80} height={50} className="object-contain" />
+                    ) : (
+                      <div className="w-16 h-10 bg-[var(--surface-2)] rounded flex items-center justify-center">
+                        <span className="text-[9px] text-[var(--text-tertiary)]">No Image</span>
+                      </div>
+                    )}
+                  </div>
                   <div>{v.model.manufacturer.name} {v.model.name}</div>
                   <div className="text-[10px] text-[var(--text-secondary)] font-normal mt-0.5">{v.name}</div>
                 </th>
@@ -136,11 +158,12 @@ export function FeatureHeatmap({ variants }: FeatureHeatmapProps) {
                   </tr>
                   {featuresList.map(featName => (
                     <tr key={featName} className="border-b border-[var(--surface-3)] hover:bg-[var(--surface-1)]/50 transition-colors">
-                      <td className="p-3 font-medium text-[var(--text-primary)]">{featName}</td>
+                      <td className="p-3 font-medium text-[var(--text-primary)] sticky left-0 bg-[var(--surface-0)] z-10">{featName}</td>
                       {variants.map(v => {
                         const val = getFeatureValue(v, featName)
+                        const isWinner = getWinnerStatus(featName, val)
                         return (
-                          <td key={v.id} className="p-3 text-center border-l border-[var(--surface-3)]">
+                          <td key={v.id} className={`p-3 text-center border-l border-[var(--surface-3)] ${isWinner ? 'bg-[var(--green-light)]/20' : ''}`}>
                             <div className="flex justify-center">{renderIcon(val)}</div>
                           </td>
                         )

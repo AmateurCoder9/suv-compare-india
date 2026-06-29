@@ -75,18 +75,37 @@ const manufacturers = [
 ]
 
 const scoreCategories = [
-  { name: 'Value for Money', maxScore: 200, weight: 0.2, description: 'Pricing in relation to specs, fuel economy, and features.' },
-  { name: 'Tech & Features', maxScore: 200, weight: 0.2, description: 'Infotainment size, connectivity, sound system, and advanced cabin features.' },
-  { name: 'Safety', maxScore: 200, weight: 0.2, description: 'Airbags count, driver assistance, crash ratings, and ESP.' },
-  { name: 'Comfort', maxScore: 200, weight: 0.2, description: 'Ride quality, seat comfort, rear headroom, and legroom.' },
-  { name: 'Overall', maxScore: 200, weight: 0.2, description: 'Sum of engine output, cabin insulation, build, and resale prospects.' }
+  { name: 'Luxury', maxScore: 120, weight: 0.12, description: 'Premium feel and features' },
+  { name: 'Size', maxScore: 100, weight: 0.10, description: 'Road presence and dimensions' },
+  { name: 'Interior', maxScore: 70, weight: 0.07, description: 'Cabin quality and design' },
+  { name: 'Comfort', maxScore: 80, weight: 0.08, description: 'Overall ride comfort' },
+  { name: 'Rear Comfort', maxScore: 70, weight: 0.07, description: 'Rear seat space and amenities' },
+  { name: 'Front Comfort', maxScore: 40, weight: 0.04, description: 'Driver and passenger seating' },
+  { name: 'Features', maxScore: 90, weight: 0.09, description: 'Convenience features' },
+  { name: 'Technology', maxScore: 60, weight: 0.06, description: 'Infotainment and connectivity' },
+  { name: 'Safety', maxScore: 90, weight: 0.09, description: 'Active and passive safety' },
+  { name: 'ADAS', maxScore: 40, weight: 0.04, description: 'Advanced driver assistance' },
+  { name: 'Engine', maxScore: 80, weight: 0.08, description: 'Power and refinement' },
+  { name: 'Transmission', maxScore: 50, weight: 0.05, description: 'Gearbox smoothness and response' },
+  { name: 'Performance', maxScore: 40, weight: 0.04, description: 'Acceleration and dynamics' },
+  { name: 'Ride', maxScore: 50, weight: 0.05, description: 'Suspension absorption' },
+  { name: 'Handling', maxScore: 30, weight: 0.03, description: 'Cornering and stability' },
+  { name: 'Steering', maxScore: 20, weight: 0.02, description: 'Feedback and weight' },
+  { name: 'NVH', maxScore: 40, weight: 0.04, description: 'Noise, vibration, and harshness insulation' },
+  { name: 'Practicality', maxScore: 30, weight: 0.03, description: 'Storage and usability' },
+  { name: 'Boot', maxScore: 20, weight: 0.02, description: 'Luggage capacity' },
+  { name: 'Fuel Economy', maxScore: 20, weight: 0.02, description: 'Efficiency' },
+  { name: 'Reliability', maxScore: 50, weight: 0.05, description: 'Long term dependability' },
+  { name: 'Ownership', maxScore: 20, weight: 0.02, description: 'Service network and cost' },
+  { name: 'Resale', maxScore: 20, weight: 0.02, description: 'Value retention' },
+  { name: 'Value', maxScore: 50, weight: 0.05, description: 'Price to performance ratio' },
+  { name: 'Overall', maxScore: 1000, weight: 1.0, description: 'Total 1000 point score' }
 ]
 
 const modelsData = [
   {
     manufacturer: 'Kia', name: 'Seltos', bodyType: 'Compact SUV', launchYear: 2019, currentYear: 2024, generationName: '2023 Facelift',
     variants: [
-      { name: 'HTE(O)', price: 10.90, isBase: true },
       { name: 'HTK', price: 12.20, isBase: false },
       { name: 'HTK(O)', price: 13.00, isBase: false },
       { name: 'HTX', price: 15.30, isBase: false },
@@ -98,7 +117,6 @@ const modelsData = [
   {
     manufacturer: 'Hyundai', name: 'Creta', bodyType: 'Compact SUV', launchYear: 2015, currentYear: 2024, generationName: '2024 Facelift',
     variants: [
-      { name: 'EX', price: 11.00, isBase: true },
       { name: 'S', price: 12.50, isBase: false },
       { name: 'S(O)', price: 13.80, isBase: false },
       { name: 'SX', price: 15.30, isBase: false },
@@ -109,7 +127,6 @@ const modelsData = [
   {
     manufacturer: 'Hyundai', name: 'Venue', bodyType: 'Compact SUV', launchYear: 2019, currentYear: 2024, generationName: '2022 Facelift',
     variants: [
-      { name: 'S', price: 8.90, isBase: true },
       { name: 'S(O)', price: 9.80, isBase: false },
       { name: 'SX', price: 11.00, isBase: false },
       { name: 'SX(O)', price: 12.40, isBase: false }
@@ -118,7 +135,6 @@ const modelsData = [
   {
     manufacturer: 'Volkswagen', name: 'Taigun', bodyType: 'Compact SUV', launchYear: 2021, currentYear: 2024, generationName: '1st Gen',
     variants: [
-      { name: 'Comfortline', price: 11.70, isBase: true },
       { name: 'Highline', price: 13.80, isBase: false },
       { name: 'Topline', price: 16.10, isBase: false },
       { name: 'GT', price: 16.80, isBase: false },
@@ -128,7 +144,6 @@ const modelsData = [
   {
     manufacturer: 'Skoda', name: 'Kushaq', bodyType: 'Compact SUV', launchYear: 2021, currentYear: 2024, generationName: '1st Gen',
     variants: [
-      { name: 'Active', price: 11.90, isBase: true },
       { name: 'Ambition', price: 13.50, isBase: false },
       { name: 'Style', price: 16.30, isBase: false },
       { name: 'Monte Carlo', price: 17.20, isBase: false }
@@ -137,7 +152,6 @@ const modelsData = [
   {
     manufacturer: 'Honda', name: 'Elevate', bodyType: 'Compact SUV', launchYear: 2023, currentYear: 2024, generationName: '1st Gen',
     variants: [
-      { name: 'V', price: 11.60, isBase: true },
       { name: 'VX', price: 13.20, isBase: false },
       { name: 'ZX', price: 15.10, isBase: false },
       { name: 'ZX Advance', price: 16.20, isBase: false }
@@ -146,7 +160,6 @@ const modelsData = [
   {
     manufacturer: 'MG', name: 'Astor', bodyType: 'Compact SUV', launchYear: 2021, currentYear: 2024, generationName: '1st Gen',
     variants: [
-      { name: 'Super', price: 10.80, isBase: true },
       { name: 'Smart', price: 14.20, isBase: false },
       { name: 'Savvy', price: 17.90, isBase: false }
     ]
@@ -154,7 +167,6 @@ const modelsData = [
   {
     manufacturer: 'MG', name: 'Hector', bodyType: 'SUV', launchYear: 2019, currentYear: 2024, generationName: '2023 Facelift',
     variants: [
-      { name: 'Super', price: 13.90, isBase: true },
       { name: 'Smart', price: 16.00, isBase: false },
       { name: 'Sharp', price: 18.20, isBase: false },
       { name: 'Savvy', price: 19.90, isBase: false }
@@ -163,14 +175,12 @@ const modelsData = [
   {
     manufacturer: 'Citroën', name: 'Basalt', bodyType: 'Coupe SUV', launchYear: 2024, currentYear: 2024, generationName: '1st Gen',
     variants: [
-      { name: 'Feel', price: 9.90, isBase: true },
       { name: 'Shine+', price: 13.80, isBase: false }
     ]
   },
   {
     manufacturer: 'Citroën', name: 'C3 Aircross', bodyType: 'Compact SUV', launchYear: 2023, currentYear: 2024, generationName: '1st Gen',
     variants: [
-      { name: 'Feel', price: 9.99, isBase: true },
       { name: 'Shine+', price: 12.80, isBase: false }
     ]
   }
@@ -355,15 +365,11 @@ async function main() {
       const isTopTrim = ['gtx', 'x-line', 'savvy', 'sharp', 'monte carlo', 'style', 'topline', 'gt plus', 'zx', 'shine+'].some(
         keyword => vData.name.toLowerCase().includes(keyword)
       )
-      const isBaseTrim = vData.isBase
 
       let buyIfText = `You want a balanced trim that offers essential conveniences like a rear camera and alloys without paying top-spec premiums.`
       let skipIfText = `You want the absolute safety assurance of ADAS and 6 airbags, or high-end luxury details.`
       
-      if (isBaseTrim) {
-        buyIfText = `You want a solid, spacious, and reliable SUV at the lowest possible entry price.`
-        skipIfText = `You require modern creature comforts like automatic AC, sunroof, or touchscreen infotainment.`
-      } else if (isTopTrim) {
+      if (isTopTrim) {
         buyIfText = `You want premium features like ADAS, a panoramic sunroof, and ventilated seats.`
         skipIfText = `You are on a tight budget and want the best price-to-performance ratio.`
       }
@@ -392,8 +398,6 @@ async function main() {
         }
       })
 
-
-
       for (const [featName, dbFeat] of Object.entries(dbFeatures)) {
         let value = 'NO'
         
@@ -402,12 +406,7 @@ async function main() {
           value = 'YES'
         }
         
-        // Base models get standard items
-        if (isBaseTrim) {
-          if (['halogen headlights', 'analog cluster with mid', 'tilt and telescopic steering'].some(k => featName.toLowerCase().includes(k))) {
-            value = 'YES'
-          }
-        } else if (isTopTrim) {
+        if (isTopTrim) {
           // Top models get all premium items
           if (['sunroof', 'led headlights', 'leatherette seats', 'ventilated front seats', 'rear ac vents', '10.25-inch touchscreen', '360-degree camera', '6 airbags', 'adas', 'cruise control', 'push button start'].some(
             k => featName.toLowerCase().includes(k)
@@ -441,31 +440,35 @@ async function main() {
       }
 
       // 3. Seed Scores
-
+      let totalScore = 0;
       
-      // Calculate scores for categories
-      const valueScore = isBaseTrim ? 180 : isTopTrim ? 120 : 155
-      const techScore = isBaseTrim ? 90 : isTopTrim ? 190 : 145
-      const safetyScore = isBaseTrim ? 100 : isTopTrim ? 185 : 140
-      const comfortScore = isBaseTrim ? 110 : isTopTrim ? 175 : 150
-      const overallScore = isBaseTrim ? 120 : isTopTrim ? 180 : 150
-      
-      const categoryScores = {
-        'Value for Money': valueScore,
-        'Tech & Features': techScore,
-        'Safety': safetyScore,
-        'Comfort': comfortScore,
-        'Overall': overallScore
-      }
-
       for (const [scName, dbSc] of Object.entries(dbScoreCats)) {
-        const scoreVal = categoryScores[scName as keyof typeof categoryScores] || 150
+        if (scName === 'Overall') continue; // Will set after loop
+        
+        const percentage = isTopTrim ? (0.85 + Math.random() * 0.1) : (0.7 + Math.random() * 0.15)
+        const scoreVal = Math.round(dbSc.maxScore * percentage)
+        totalScore += scoreVal;
+        
         await prisma.variantScore.create({
           data: {
             variantId: variant.id,
             categoryId: dbSc.id,
             score: scoreVal,
             explanation: `${scName} scored at ${scoreVal}/${dbSc.maxScore} for the ${variant.name} trim.`,
+            confidence: 90
+          }
+        })
+      }
+      
+      // Set Overall Score
+      const overallCat = dbScoreCats['Overall'];
+      if (overallCat) {
+        await prisma.variantScore.create({
+          data: {
+            variantId: variant.id,
+            categoryId: overallCat.id,
+            score: totalScore,
+            explanation: `Overall score of ${totalScore}/1000 for the ${variant.name} trim.`,
             confidence: 90
           }
         })

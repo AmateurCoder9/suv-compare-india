@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,13 +32,16 @@ export async function GET(request: NextRequest) {
 
     const result = variants.map(v => {
       const overallScore = v.scores.find(s => s.category.name === 'Overall')?.score || 600
+      const imageUrl = getCarHeroImage(v.model.slug) || getFallbackCarImage(v.model.slug) || ''
       return {
         variantSlug: v.slug,
         variantName: v.name,
+        modelSlug: v.model.slug,
         modelName: v.model.name,
         manufacturerName: v.model.manufacturer.name,
         priceInrLakh: v.prices[0]?.priceInrLakh || 0,
-        overallScore
+        overallScore,
+        imageUrl
       }
     }).sort((a, b) => b.overallScore - a.overallScore)
 

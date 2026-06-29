@@ -54,16 +54,16 @@ export default async function ModelOverviewPage({
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-12">
       {/* Hero section */}
       <div className="border border-border bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-sm)]">
-        <div className="grid md:grid-cols-2 gap-0">
+        <div className="grid md:grid-cols-5 gap-0">
           {/* Image */}
-          <div className="h-64 md:h-auto bg-muted/20 flex items-center justify-center p-8">
+          <div className="md:col-span-3 h-72 md:h-auto bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center p-4">
             {img ? (
               <Image
                 src={img}
                 alt={`${model.manufacturer.name} ${model.name}`}
-                width={400}
-                height={280}
-                className="object-contain drop-shadow-lg"
+                width={600}
+                height={400}
+                className="object-contain drop-shadow-xl scale-105"
               />
             ) : (
               <div className="flex flex-col items-center gap-2 text-muted-foreground/30">
@@ -74,7 +74,7 @@ export default async function ModelOverviewPage({
           </div>
           
           {/* Info */}
-          <div className="p-8 flex flex-col justify-center">
+          <div className="md:col-span-2 p-8 flex flex-col justify-center">
             <div className="text-xs text-[var(--accent-color)] font-bold uppercase tracking-wider">{model.manufacturer.name}</div>
             <h1 className="text-3xl font-bold tracking-tight mt-1">{model.name}</h1>
             <div className="flex flex-wrap gap-2 mt-3">
@@ -130,10 +130,14 @@ export default async function ModelOverviewPage({
 
             return (
               <Link key={variant.id} href={`/variants/${variant.slug}`}>
-                <div className="border border-border bg-card rounded-xl p-5 flex items-center justify-between group hover:border-[var(--accent-color)]/30 transition-all duration-150 relative">
+                <div className="border border-border bg-card rounded-xl p-4 flex items-center justify-between group hover:border-[var(--accent-color)]/30 transition-all duration-150 relative">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center border border-border">
-                      <Car className="w-5 h-5 text-muted-foreground" />
+                    <div className="w-16 h-12 rounded bg-muted/30 flex items-center justify-center border border-border/50 p-1 shrink-0">
+                      {img ? (
+                        <Image src={img} alt={variant.name} width={50} height={35} className="object-contain" />
+                      ) : (
+                        <Car className="w-6 h-6 text-muted-foreground/30" />
+                      )}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
