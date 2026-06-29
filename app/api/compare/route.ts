@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const variants = await db.variant.findMany({
       where: { slug: { in: slugs } },
       include: {
-        model: { include: { manufacturer: true } },
+        model: { include: { manufacturer: true, media: true } },
         scores: { include: { category: true } },
         features: { include: { feature: { include: { category: true } } } },
         prices: { orderBy: { priceInrLakh: 'asc' }, take: 1 }
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         if (v) {
           return {
             ...v,
-            imageUrl: getCarHeroImage(v.model.slug) || getFallbackCarImage(v.model.slug) || ''
+            imageUrl: getPrimaryImage(v.model.media) || getFallbackCarImage(v.model.slug) || ''
           }
         }
         return null

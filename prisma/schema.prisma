@@ -36,6 +36,7 @@ model Model {
   competitors      ModelCompetitor[] @relation("ModelCompetitors")
   competingWith    ModelCompetitor[] @relation("CompetingModels")
   buyerGuideEntries BuyerGuideEntry[]
+  media            Media[]
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 }
@@ -330,15 +331,33 @@ model ReviewConsensus {
 }
 
 model Media {
-  id          Int     @id @default(autoincrement())
-  variantId   Int
-  variant     Variant @relation(fields: [variantId], references: [id])
-  type        String                               // FRONT, REAR, SIDE, INTERIOR, DASHBOARD, REAR_SEAT, BOOT, WHEEL, COLOR
-  url         String
-  altText     String
-  isOfficial  Boolean @default(true)
-  sourceId    Int?
-  source      Source? @relation(fields: [sourceId], references: [id])
+  id                 Int      @id @default(autoincrement())
+  modelId            Int?
+  model              Model?   @relation(fields: [modelId], references: [id])
+  variantId          Int?
+  variant            Variant? @relation(fields: [variantId], references: [id])
+  category           String                               // Hero, Front, Interior, Dashboard, etc.
+  filename           String
+  width              Int
+  height             Int
+  filesize           Int
+  mime               String
+  sha256             String   @unique
+  sourcePage         String?
+  imageUrl           String
+  downloadDate       DateTime @default(now())
+  copyrightNotice    String?
+  photographer       String?
+  priority           Int      @default(0)
+  isHero             Boolean  @default(false)
+  confidence         Int      @default(100)
+  verificationStatus String   @default("UNVERIFIED")
+
+  // Fallbacks for compatibility
+  altText            String?
+  isOfficial         Boolean  @default(true)
+  sourceId           Int?
+  source             Source?  @relation(fields: [sourceId], references: [id])
 }
 
 // ─── Variant Progression ─────────────────────────────────────

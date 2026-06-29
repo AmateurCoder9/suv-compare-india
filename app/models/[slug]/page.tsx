@@ -6,7 +6,8 @@ import { PriceRangeBar } from '@/components/price-range-bar'
 import { ArrowRight, Car, Tag } from 'lucide-react'
 import Image from 'next/image'
 
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
+import { ImageGallery } from '@/components/ImageGallery'
 
 // Import new Buyer Intelligence components
 import { ShortlistButton } from '@/components/shortlist/ShortlistButton'
@@ -25,6 +26,7 @@ export default async function ModelOverviewPage({
     where: { slug },
     include: {
       manufacturer: true,
+      media: true,
       variants: {
         orderBy: { displayOrder: 'asc' },
         include: {
@@ -41,7 +43,7 @@ export default async function ModelOverviewPage({
   const validPrices = model.variants.filter(v => (v.prices[0]?.priceInrLakh || 0) > 0).map(v => v.prices[0]?.priceInrLakh || 0)
   const minPrice = validPrices.length > 0 ? Math.min(...validPrices) : 0
   const maxPrice = validPrices.length > 0 ? Math.max(...validPrices) : 0
-  const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
+  const img = getPrimaryImage(model.media) || getFallbackCarImage(model.slug)
 
   // Construct modelVariants list for trim upgrade explainer
   const modelVariants = model.variants.map(v => ({
@@ -111,6 +113,12 @@ export default async function ModelOverviewPage({
           </div>
         </div>
       </div>
+
+      {/* Gallery Section */}
+      <section>
+        <h2 className="text-xl font-semibold mb-5 flex items-center gap-2">Gallery</h2>
+        <ImageGallery media={model.media} />
+      </section>
 
       {/* Variants list */}
       <div>

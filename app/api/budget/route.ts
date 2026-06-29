@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         }
       },
       include: {
-        model: { include: { manufacturer: true } },
+        model: { include: { manufacturer: true, media: true } },
         prices: { where: { isLatest: true }, take: 1 },
         scores: { include: { category: true } }
       }
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
     const result = variants.map(v => {
       const overallScore = v.scores.find(s => s.category.name === 'Overall')?.score || 600
-      const imageUrl = getCarHeroImage(v.model.slug) || getFallbackCarImage(v.model.slug) || ''
+      const imageUrl = getPrimaryImage(v.model.media) || getFallbackCarImage(v.model.slug) || ''
       return {
         variantSlug: v.slug,
         variantName: v.name,

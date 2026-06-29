@@ -2,7 +2,7 @@ import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { Trophy, CheckCircle2 } from 'lucide-react'
 
@@ -25,7 +25,7 @@ export default async function BuyerGuideDetailPage({ params }: { params: { slug:
 
   const rawVariants = await db.variant.findMany({
     include: {
-      model: { include: { manufacturer: true } },
+      model: { include: { manufacturer: true, media: true } },
       prices: { where: { isLatest: true }, take: 1 },
       scores: { include: { category: true } }
     }
@@ -57,7 +57,7 @@ export default async function BuyerGuideDetailPage({ params }: { params: { slug:
 
       <div className="space-y-8 mt-12">
         {sorted.map((variant, idx) => {
-          const img = getCarHeroImage(variant.model.slug) || getFallbackCarImage(variant.model.slug)
+          const img = getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug)
           const rank = idx + 1
           
           return (

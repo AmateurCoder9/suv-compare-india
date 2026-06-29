@@ -4,7 +4,8 @@ import { formatCurrencyLakh } from '@/lib/formatters'
 import { ScoreRadarChart } from '@/components/score-radar-chart'
 import { Check, X, Star, Shield, Gauge, Tag, Car } from 'lucide-react'
 import Image from 'next/image'
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
+import { ImageGallery } from '@/components/ImageGallery'
 
 // Import new Buyer Intelligence components
 import { ShortlistButton } from '@/components/shortlist/ShortlistButton'
@@ -27,7 +28,8 @@ export default async function VariantDetailPage({
     include: {
       model: {
         include: {
-          manufacturer: true
+          manufacturer: true,
+          media: true
         }
       },
       scores: {
@@ -81,7 +83,7 @@ export default async function VariantDetailPage({
     features: variant.features.map(f => ({ value: f.value }))
   })
 
-  const img = getCarHeroImage(variant.model.slug) || getFallbackCarImage(variant.model.slug)
+  const img = getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug)
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-10">
@@ -256,6 +258,12 @@ export default async function VariantDetailPage({
           </div>
         )}
       </div>
+
+      {/* Gallery Section */}
+      <section className="space-y-4 pt-4 border-t border-border">
+        <h2 className="text-base font-bold text-foreground uppercase tracking-wider">Visual Gallery</h2>
+        <ImageGallery media={variant.model.media} />
+      </section>
     </div>
   )
 }

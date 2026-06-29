@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { Car } from 'lucide-react'
 import Image from 'next/image'
 
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 
 export default async function ModelsIndexPage() {
   const manufacturers = await db.manufacturer.findMany({
     include: {
       models: {
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
+        include: { media: true }
       }
     },
     orderBy: { name: 'asc' }
@@ -34,7 +35,7 @@ export default async function ModelsIndexPage() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {manufacturer.models.map(model => {
-              const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
+              const img = getPrimaryImage(model.media) || getFallbackCarImage(model.slug)
               return (
                 <Link key={model.id} href={`/models/${model.slug}`}>
                   <div className="glass-card rounded-xl overflow-hidden group h-full flex flex-col">

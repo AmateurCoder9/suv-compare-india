@@ -5,7 +5,7 @@ import { getTopVariantsByCategory } from '@/lib/rankings'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { Car, GitCompareArrows, Trophy, Shield } from 'lucide-react'
 import Image from 'next/image'
-import { getCarHeroImage, getFallbackCarImage } from '@/lib/images'
+import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 
 // Import new Buyer Intelligence components
 import { BudgetFinder } from '@/components/budget-finder/BudgetFinder'
@@ -16,7 +16,7 @@ export default async function HomePage() {
   const recentModels = await db.model.findMany({
     orderBy: { createdAt: 'desc' },
     take: 8,
-    include: { manufacturer: true }
+    include: { manufacturer: true, media: true }
   })
 
   const topValueVariants = await getTopVariantsByCategory('Value for Money', 10)
@@ -106,7 +106,7 @@ export default async function HomePage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {recentModels.map(model => {
-            const img = getCarHeroImage(model.slug) || getFallbackCarImage(model.slug)
+            const img = getPrimaryImage(model.media) || getFallbackCarImage(model.slug)
             return (
               <Link key={model.id} href={`/models/${model.slug}`} className="border border-border bg-card rounded-lg overflow-hidden flex flex-col hover:border-foreground/30 transition-colors">
                 <div className="h-44 bg-muted/20 flex items-center justify-center relative p-4">
@@ -170,9 +170,9 @@ export default async function HomePage() {
                     <td className="text-center font-mono text-xs">{idx + 1}</td>
                     <td className="p-2 text-center">
                       <div className="w-16 h-10 mx-auto bg-muted/30 rounded flex items-center justify-center">
-                        {getCarHeroImage(variant.model.slug) ? (
+                        {getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug) ? (
                           <Image
-                            src={getCarHeroImage(variant.model.slug)!}
+                            src={getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug)!}
                             alt={variant.model.name}
                             width={50}
                             height={30}
