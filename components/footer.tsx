@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Car, Heart } from 'lucide-react'
+import Image from 'next/image'
+import { Heart } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -9,11 +10,16 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-                <Car className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center relative overflow-hidden">
+                <Image
+                  src="/images/logo.png"
+                  alt="SUV Compare Logo"
+                  fill
+                  className="object-contain p-1.5"
+                />
               </div>
               <div>
-                <span className="font-bold text-lg tracking-tight gradient-text">SUV Compare</span>
+                <span className="font-bold text-lg tracking-tight">SUV Compare</span>
                 <span className="text-xs text-muted-foreground block -mt-1 tracking-wider">INDIA 2026</span>
               </div>
             </div>

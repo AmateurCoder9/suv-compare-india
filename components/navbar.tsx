@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { GlobalSearchBar } from './global-search-bar'
 import { useState } from 'react'
 import { Menu, X, Car, GitCompareArrows, BookOpen, Trophy } from 'lucide-react'
@@ -20,11 +21,16 @@ export function Navbar() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-            <Car className="w-5 h-5 text-primary" />
+          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors relative overflow-hidden">
+            <Image
+              src="/images/logo.png"
+              alt="SUV Compare Logo"
+              fill
+              className="object-contain p-1.5"
+            />
           </div>
           <div className="hidden sm:block">
-            <span className="font-bold text-lg tracking-tight gradient-text">SUV Compare</span>
+            <span className="font-bold text-lg tracking-tight">SUV Compare</span>
             <span className="text-xs text-muted-foreground block -mt-1 tracking-wider">INDIA 2026</span>
           </div>
         </Link>
