@@ -3,11 +3,7 @@ import { notFound } from 'next/navigation'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { ScoreRadarChart } from '@/components/score-radar-chart'
 import { Check, X, Star, Shield, Gauge, Tag, Car } from 'lucide-react'
-import Image from 'next/image'
-import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
-import { ImageGallery } from '@/components/ImageGallery'
 
-// Import new Buyer Intelligence components
 import { ShortlistButton } from '@/components/shortlist/ShortlistButton'
 import { PersonaTag } from '@/components/persona/PersonaTag'
 import { JargonTooltip } from '@/components/tooltip/JargonTooltip'
@@ -83,33 +79,11 @@ export default async function VariantDetailPage({
     features: variant.features.map(f => ({ value: f.value }))
   })
 
-  const img = getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug)
-
   return (
     <div className="container mx-auto px-4 py-10 max-w-5xl space-y-10">
       {/* Header Card */}
       <div className="border border-border bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-sm)]">
-        <div className="grid md:grid-cols-5 gap-0">
-          {/* Image */}
-          <div className="md:col-span-3 h-72 md:h-auto bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center p-4 border-b md:border-b-0 md:border-r border-border">
-            {img ? (
-              <Image
-                src={img}
-                alt={`${variant.model.manufacturer.name} ${variant.model.name}`}
-                width={600}
-                height={400}
-                className="object-contain drop-shadow-xl scale-105"
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-muted-foreground/30">
-                <Car className="w-16 h-16" />
-                <span className="text-[11px] font-medium tracking-wide">Official image unavailable.</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Info */}
-          <div className="md:col-span-2 p-8 flex flex-col justify-center space-y-6">
+        <div className="p-8 flex flex-col justify-center space-y-6">
             <div className="space-y-2">
               <div className="flex justify-between items-start gap-4">
                 <div>
@@ -164,7 +138,6 @@ export default async function VariantDetailPage({
               </div>
             )}
           </div>
-        </div>
       </div>
 
       {/* RTO and EMI Calculator */}
@@ -259,11 +232,6 @@ export default async function VariantDetailPage({
         )}
       </div>
 
-      {/* Gallery Section */}
-      <section className="space-y-4 pt-4 border-t border-border">
-        <h2 className="text-base font-bold text-foreground uppercase tracking-wider">Visual Gallery</h2>
-        <ImageGallery media={variant.model.media} />
-      </section>
     </div>
   )
 }

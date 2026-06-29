@@ -4,8 +4,7 @@ import Link from 'next/link'
 import { getTopVariantsByCategory } from '@/lib/rankings'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { Car, GitCompareArrows, Trophy, Shield } from 'lucide-react'
-import Image from 'next/image'
-import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
+
 
 // Import new Buyer Intelligence components
 import { BudgetFinder } from '@/components/budget-finder/BudgetFinder'
@@ -106,31 +105,19 @@ export default async function HomePage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {recentModels.map(model => {
-            const img = getPrimaryImage(model.media) || getFallbackCarImage(model.slug)
             return (
-              <Link key={model.id} href={`/models/${model.slug}`} className="border border-border bg-card rounded-lg overflow-hidden flex flex-col hover:border-foreground/30 transition-colors">
-                <div className="h-44 bg-muted/20 flex items-center justify-center relative p-4">
-                  {img ? (
-                    <Image
-                      src={img}
-                      alt={model.name}
-                      width={240}
-                      height={160}
-                      className="object-contain scale-110 drop-shadow-md group-hover:scale-125 transition-transform duration-500"
-                    />
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground font-mono">No Image</span>
-                  )}
-                  <span className="absolute top-2 right-2 text-[9px] bg-secondary border border-border px-1 rounded font-mono text-muted-foreground">
-                    {model.launchYear}
-                  </span>
-                </div>
-                <div className="p-3 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="text-[10px] text-muted-foreground uppercase font-semibold">{model.manufacturer.name}</div>
-                    <div className="font-semibold text-sm text-foreground mt-0.5">{model.name}</div>
+              <Link key={model.id} href={`/models/${model.slug}`} className="border border-border bg-card rounded-lg flex flex-col hover:border-[var(--accent-color)]/30 transition-colors p-4 group">
+                <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="text-[10px] text-[var(--accent-color)] uppercase font-bold tracking-wider">{model.manufacturer.name}</div>
+                      <div className="font-bold text-base text-foreground mt-0.5 group-hover:text-[var(--accent-color)] transition-colors">{model.name}</div>
+                    </div>
+                    <span className="text-[10px] bg-secondary border border-border px-1.5 py-0.5 rounded font-mono text-muted-foreground font-semibold">
+                      {model.launchYear}
+                    </span>
                   </div>
-                  <div className="text-[11px] text-muted-foreground mt-2 font-mono">{model.bodyType}</div>
+                  <div className="text-[11px] text-muted-foreground mt-4 font-mono font-medium">{model.bodyType}</div>
                 </div>
               </Link>
             )
@@ -157,33 +144,17 @@ export default async function HomePage() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th className="w-12 text-center">Rank</th>
-                  <th className="w-20 text-center">Vehicle</th>
-                  <th>SUV Variant</th>
-                  <th className="text-right">Price (Delhi Ex-Showroom)</th>
-                  <th className="text-right w-32">Score (out of 1000)</th>
+                  <th className="text-left w-12 p-3 border-b border-border text-muted-foreground">Rank</th>
+                  <th className="text-left p-3 border-b border-border text-muted-foreground">SUV Variant</th>
+                  <th className="text-right p-3 border-b border-border text-muted-foreground">Price (Delhi Ex-Showroom)</th>
+                  <th className="text-right w-32 p-3 border-b border-border text-muted-foreground">Score (out of 1000)</th>
                 </tr>
               </thead>
               <tbody>
                 {topValueVariants.map((variant, idx) => (
-                  <tr key={variant.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="text-center font-mono text-xs">{idx + 1}</td>
-                    <td className="p-2 text-center">
-                      <div className="w-16 h-10 mx-auto bg-muted/30 rounded flex items-center justify-center">
-                        {getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug) ? (
-                          <Image
-                            src={getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug)!}
-                            alt={variant.model.name}
-                            width={50}
-                            height={30}
-                            className="object-contain"
-                          />
-                        ) : (
-                          <Car className="w-4 h-4 text-muted-foreground/50" />
-                        )}
-                      </div>
-                    </td>
-                    <td>
+                  <tr key={variant.id} className="hover:bg-muted/30 transition-colors border-b border-border/50 group">
+                    <td className="text-left font-mono text-xs p-3 font-semibold text-muted-foreground">{idx + 1}</td>
+                    <td className="p-3">
                       <Link href={`/variants/${variant.slug}`} className="font-semibold text-foreground hover:underline">
                         {variant.model.manufacturer.name} {variant.model.name} <span className="font-normal text-muted-foreground text-xs">({variant.name})</span>
                       </Link>

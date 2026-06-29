@@ -19,12 +19,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="light">
-      <body className={`${inter.className} flex flex-col min-h-screen bg-background text-foreground antialiased`}>
-        <Navbar />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
+      <body className={`${inter.className} min-h-screen bg-gray-300 dark:bg-neutral-900 p-2 sm:p-6 lg:p-10 antialiased`}>
+        <div className="mac-window h-[calc(100vh-1rem)] sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-5rem)] w-full max-w-[1400px] mx-auto bg-surface-1">
+          <Navbar />
+          <div className="flex flex-1 overflow-hidden">
+            <main className="mac-content relative">
+              {children}
+              <Footer />
+            </main>
+          </div>
+        </div>
       </body>
     </html>
   );

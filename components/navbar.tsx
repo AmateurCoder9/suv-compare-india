@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { GlobalSearchBar } from './global-search-bar'
 import { useState } from 'react'
 import { Menu, X, Car, GitCompareArrows, BookOpen, Trophy } from 'lucide-react'
@@ -17,21 +16,19 @@ export function Navbar() {
   ]
 
   return (
-    <nav className="glass sticky top-0 z-50 border-b border-border/50">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors relative overflow-hidden">
-            <Image
-              src="/images/logo.png"
-              alt="SUV Compare Logo"
-              fill
-              className="object-contain p-1.5"
-            />
-          </div>
-          <div className="hidden sm:block">
-            <span className="font-bold text-lg tracking-tight">SUV Compare</span>
-            <span className="text-xs text-muted-foreground block -mt-1 tracking-wider">INDIA 2026</span>
+    <nav className="mac-toolbar">
+      <div className="w-full flex items-center justify-between gap-4">
+        {/* macOS Traffic Lights */}
+        <div className="traffic-lights">
+          <div className="traffic-light close"></div>
+          <div className="traffic-light min"></div>
+          <div className="traffic-light max"></div>
+        </div>
+
+        {/* Logo / App Name */}
+        <Link href="/" className="flex items-center gap-2 shrink-0 group">
+          <div className="hidden sm:block text-sm font-semibold tracking-tight text-foreground">
+            SUV Compare
           </div>
         </Link>
 

@@ -1,8 +1,6 @@
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
-import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { Trophy, CheckCircle2 } from 'lucide-react'
 
@@ -57,22 +55,15 @@ export default async function BuyerGuideDetailPage({ params }: { params: { slug:
 
       <div className="space-y-8 mt-12">
         {sorted.map((variant, idx) => {
-          const img = getPrimaryImage(variant.model.media) || getFallbackCarImage(variant.model.slug)
           const rank = idx + 1
           
           return (
-            <div key={variant.id} className="border border-border bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-sm)] flex flex-col md:flex-row relative group hover:border-accent/40 transition-colors">
-              <div className="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-xl shadow-lg border-2 border-white">
+            <div key={variant.id} className="border border-border bg-card rounded-2xl overflow-hidden shadow-[var(--shadow-sm)] flex flex-col relative group hover:border-accent/40 transition-colors">
+              <div className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold text-xl shadow-lg border-2 border-white">
                 #{rank}
               </div>
-              
-              <div className="md:w-2/5 bg-gradient-to-br from-muted/20 to-muted/40 p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-border min-h-[250px]">
-                {img ? (
-                  <Image src={img} alt={variant.model.name} width={400} height={250} className="object-contain scale-110 drop-shadow-xl group-hover:scale-125 transition-transform duration-500" />
-                ) : null}
-              </div>
 
-              <div className="md:w-3/5 p-6 md:p-8 flex flex-col justify-between">
+              <div className="p-6 md:p-8 flex flex-col justify-between">
                 <div>
                   <div className="text-xs text-accent font-bold uppercase tracking-wider mb-1">{variant.model.manufacturer.name}</div>
                   <h2 className="text-2xl font-bold text-foreground">

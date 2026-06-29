@@ -1,9 +1,7 @@
 import { db } from '@/lib/db'
 import Link from 'next/link'
 import { Car } from 'lucide-react'
-import Image from 'next/image'
 
-import { getPrimaryImage, getFallbackCarImage } from '@/lib/images'
 
 export default async function ModelsIndexPage() {
   const manufacturers = await db.manufacturer.findMany({
@@ -35,35 +33,22 @@ export default async function ModelsIndexPage() {
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {manufacturer.models.map(model => {
-              const img = getPrimaryImage(model.media) || getFallbackCarImage(model.slug)
               return (
-                <Link key={model.id} href={`/models/${model.slug}`}>
-                  <div className="glass-card rounded-xl overflow-hidden group h-full flex flex-col">
-                    <div className="h-52 bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center overflow-hidden relative">
-                      {img ? (
-                        <Image
-                          src={img}
-                          alt={`${manufacturer.name} ${model.name}`}
-                          width={300}
-                          height={200}
-                          className="object-contain scale-110 group-hover:scale-125 drop-shadow-md transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center gap-1.5 text-white/20">
-                          <Car className="w-8 h-8" />
-                          <span className="text-[9px] font-medium tracking-wide">Official image unavailable.</span>
-                        </div>
-                      )}
-                      <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-[10px] font-medium text-primary">
-                        {model.launchYear}
-                      </div>
+                <Link key={model.id} href={`/models/${model.slug}`} className="border border-border bg-card rounded-lg flex flex-col hover:border-[var(--accent-color)]/30 transition-colors p-6 group shadow-[var(--shadow-sm)]">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="text-[10px] text-[var(--accent-color)] uppercase font-bold tracking-wider">{manufacturer.name}</div>
+                      <div className="font-bold text-lg text-foreground mt-0.5 group-hover:text-[var(--accent-color)] transition-colors">{model.name}</div>
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold group-hover:text-primary transition-colors">{manufacturer.name} {model.name}</h3>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 mt-2 rounded-md bg-accent/50 text-xs text-muted-foreground">
-                        {model.bodyType}
-                      </span>
-                    </div>
+                    <span className="text-[10px] bg-secondary border border-border px-1.5 py-0.5 rounded font-mono text-muted-foreground font-semibold">
+                      {model.launchYear}
+                    </span>
+                  </div>
+                  
+                  <div className="mt-6 flex justify-between items-end border-t border-border pt-4">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent/10 text-xs text-accent font-medium">
+                      {model.bodyType}
+                    </span>
                   </div>
                 </Link>
               )

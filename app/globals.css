@@ -21,6 +21,10 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
 }
 
 :root {
@@ -128,11 +132,45 @@
 
 /* Base structural layout classes (replacing all glassmorphism / fancy shadows) */
 .glass, .glass-card {
-  @apply bg-card border border-border rounded-lg shadow-sm transition-none;
+  @apply bg-card border border-border shadow-sm transition-none;
 }
 
 .glass-card:hover {
   @apply border-border transform-none shadow-sm;
+}
+
+/* macOS Specific UI Elements */
+.mac-window {
+  @apply bg-surface-1 border border-border shadow-2xl rounded-xl overflow-hidden flex flex-col relative;
+}
+
+.mac-toolbar {
+  @apply bg-surface-1/80 backdrop-blur-xl border-b border-border h-12 flex items-center px-4 shrink-0 sticky top-0 z-50;
+}
+
+.mac-sidebar {
+  @apply bg-surface-2/60 backdrop-blur-xl border-r border-border min-h-screen w-64 hidden md:block;
+}
+
+.mac-content {
+  @apply bg-surface-0 flex-1 overflow-auto rounded-tl-lg border-l border-t border-border shadow-inner;
+}
+
+.traffic-lights {
+  @apply flex gap-2 items-center mr-4;
+}
+
+.traffic-light {
+  @apply w-3 h-3 rounded-full border border-black/10;
+}
+.traffic-light.close {
+  @apply bg-[#FF5F56] border-[#E0443E];
+}
+.traffic-light.min {
+  @apply bg-[#FFBD2E] border-[#DEA123];
+}
+.traffic-light.max {
+  @apply bg-[#27C93F] border-[#1AAB29];
 }
 
 .score-badge {
@@ -142,7 +180,7 @@
 .gradient-text, .gradient-text-warm {
   background: none !important;
   -webkit-text-fill-color: initial !important;
-  @apply text-foreground font-bold;
+  @apply text-foreground font-semibold;
 }
 
 /* Compact data styling */

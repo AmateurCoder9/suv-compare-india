@@ -3,7 +3,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { formatCurrencyLakh } from '@/lib/formatters'
 import { Check, X } from 'lucide-react'
-import Image from 'next/image'
 
 interface FeatureCategory {
   name: string
@@ -145,15 +144,7 @@ export function MobileSwipeCompare({ variants }: MobileSwipeCompareProps) {
                 <div className={`h-[120px] border-b border-[var(--surface-3)] p-2.5 text-center flex flex-col justify-between ${
                   isHighlighted ? 'bg-[var(--accent-light)]/40' : 'bg-[var(--surface-1)]/40'
                 }`}>
-                  <div className="flex justify-center mb-1 h-10 items-center">
-                    {v.imageUrl ? (
-                      <Image src={v.imageUrl} alt={v.model.name} width={60} height={40} className="object-contain" />
-                    ) : (
-                      <div className="w-12 h-8 bg-[var(--surface-2)] rounded flex items-center justify-center">
-                        <span className="text-[8px] text-[var(--text-tertiary)]">No Img</span>
-                      </div>
-                    )}
-                  </div>
+
                   <div className="space-y-0.5">
                     <div className="font-bold text-[10px] text-[var(--text-primary)] leading-tight line-clamp-2">
                       {v.model.manufacturer.name} {v.model.name}
